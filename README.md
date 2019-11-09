@@ -1,4 +1,4 @@
-#Usage
+# Usage
 
 You can download the compiled jar bundled with all dependencies from here.
 The program can be used either in UI mode or on the command line. 
