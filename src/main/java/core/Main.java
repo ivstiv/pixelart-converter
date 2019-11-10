@@ -12,9 +12,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("sample.fxml")));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        //Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view.fxml")));
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getClassLoader().getResource("view.fxml"));
+        fxmlLoader.setController(new Controller());
+        Parent root = fxmlLoader.load();
+        primaryStage.setTitle("Drednot Pixel Art Converter");
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }
 
