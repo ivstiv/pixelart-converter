@@ -1,10 +1,21 @@
+# Information
+
+This project aims to recreate pixel arts as close as possible to a given image but with a limited color palette. In this case it is working with the color palette of the [Drednot's](https://drednot.io) Colored Panel but technically it should not have any issues to work with any other palette given it is in the right json format.
+
+Features:
+- Scaling of the pixel art
+- Option to show the IDs of the colors (specific to Drednot)
+- Preview images in different color spaces
+- Export images in different color spaces
+- Available color spaces and algorithms: RGB, HSV, CIEDE2000, CIELAB76, CIELAB94 
+
+**Note that this has been made over a weekend without any testing or best practices and can have a lot of bugs. Please report them to me on discord SKDown#4341!**
 # Usage
 
 You can download the compiled jar bundled with all dependencies from here.
-The program can be used either in UI mode or on the command line. 
-
-Exporting an image from the command line: ```java -jar drednot-pixelart-converter-1.0.jar -mode <RGB|HSV|whatever> -i <input file> -o <output file>```
-Example: 
+The UI is pretty self-explanatory,
+ just don't feed the program large images. It is supposed to work with pixel arts with 1 to 1 ratio e.g sprites.  
+ 
 # Project Setup
 In order to setup the project you will need:
 - JDK 8+
@@ -19,5 +30,21 @@ Run the compiled jar:
 
 Or what I do is just run both of them in bash:
 ```mvn package && java -jar target/drednot-pixelart-converter-1.0.jar```
+
+# Planned features
+If there is interest I can continue working on the project and add more features to it such as:
+- Better color matching algorithms
+- Exposing more offsets to the UI
+- Adding support for wider variety of images
+- Add documentation
+- Command line support for exporting (will make the program easy to integrate with a web stack)
+- Open to ideas
+
+# Links
+Related links to the project:
+- Most of the stuff was implemented from here: https://en.wikipedia.org/wiki/Color_difference
+- Using this library for CIEDE200 comparison: https://github.com/dajudge/color-diff
+- Drednot: https://drednot.io/
+- My discord tag: SKDown#4341
 
 
