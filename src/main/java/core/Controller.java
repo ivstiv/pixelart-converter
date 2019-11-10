@@ -81,7 +81,7 @@ public class Controller implements Initializable {
             Stage stage = new Stage();
             Group root = new Group(imageView);
             Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
-            stage.setTitle("Image preview");
+            stage.setTitle("Image preview (Original)");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.show();
@@ -90,13 +90,17 @@ public class Controller implements Initializable {
 
     public void showPreview() throws IOException {
         if(getImportImagePath() != null) {
+
+            RadioButton selectedRadioButton = (RadioButton) colorSpaceGroup.getSelectedToggle();
+            String colorSpace = selectedRadioButton.getText();
+
             BufferedImage displayImage = getConvertedImage();
             Image image = SwingFXUtils.toFXImage(displayImage, null);
             ImageView imageView = new ImageView(image);
             Stage stage = new Stage();
             Group root = new Group(imageView);
             Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
-            stage.setTitle("Image preview");
+            stage.setTitle("Image preview ("+colorSpace+")");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.show();
@@ -137,7 +141,7 @@ public class Controller implements Initializable {
             ColorDistanceCalculator calculator = new ColorDistanceCalculator(ColorSpace.RGB);
             for (int x = 0; x < colors.length; x++) {
                 for (int y = 0; y < colors[x].length; y++) {
-                    double distance = calculator.euclideanDistanceBetween(colors[x][y], new RgbColor(0,0,0));
+                    double distance = calculator.euclideanDistanceRGB(colors[x][y], new RgbColor(0,0,0));
                     if(distance < 50) {
                         g2.setColor(Color.lightGray);
                     }else{

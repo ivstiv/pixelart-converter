@@ -77,10 +77,11 @@ public class PixelArt {
 
         for(int j = 0; j < originalColors.length; j++) {
             for (int i = 0; i < originalColors[j].length; i++) {
-                RgbColor color = new RgbColor(
+                DrednotColor color = new DrednotColor(
                         originalColors[j][i].getRed(),
                         originalColors[j][i].getGreen(),
-                        originalColors[j][i].getBlue()
+                        originalColors[j][i].getBlue(),
+                        -1
                 );
 
                 drednotColors[j][i] = calculator.getClosestColor(color, drednotColorPalette);
