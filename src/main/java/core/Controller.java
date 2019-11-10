@@ -8,6 +8,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -32,10 +33,17 @@ public class Controller implements Initializable {
     @FXML CheckBox showColorID;
     @FXML Slider fontSize, scaleRatio;
     @FXML Hyperlink github;
+    @FXML TextField chromaOffset;
+    private static Controller instance;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        instance = this;
         github.setOnAction((event) -> Main.getInstance().getHostServices().showDocument("https://github.com/Ivstiv/drednot-pixelart-converter"));
+    }
+
+    public static Controller getInstance() {
+        return instance;
     }
 
     public void selectImportImage() {
@@ -120,6 +128,11 @@ public class Controller implements Initializable {
     private BufferedImage getConvertedImage() throws IOException {
         RadioButton selectedRadioButton = (RadioButton) colorSpaceGroup.getSelectedToggle();
         String colorSpace = selectedRadioButton.getText();
+
+        if(colorSpace.equals("CIELAB_94")) {
+
+        }
+
         PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace));
         DrednotColor[][] colors = pixelart.getDrednotColors();
         BufferedImage drednotImage = new BufferedImage(colors.length, colors[0].length, BufferedImage.TYPE_INT_RGB);

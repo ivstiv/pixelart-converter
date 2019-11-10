@@ -19,14 +19,14 @@ public class Main extends Application {
         fxmlLoader.setController(new Controller());
         Parent root = fxmlLoader.load();
         primaryStage.setTitle("Drednot Pixel Art Converter");
-        primaryStage.setScene(new Scene(root, 650, 400));
+        primaryStage.setScene(new Scene(root, 680, 550));
         primaryStage.show();
     }
 
 
     public static void main(String[] args) {
         if(args.length > 0) {
-            System.out.println("export option");
+            System.out.println("to be implemented");
             System.exit(0);
         }else{
             launch(args);

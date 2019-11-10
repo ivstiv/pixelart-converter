@@ -25,7 +25,12 @@ public class PixelArt {
         BufferedImage image = ImageIO.read(new File(path));
         this.image = image;
         this.drednotColorPalette = initialiseDrednotColors();
-        this.calculator = new ColorDistanceCalculator(colorSpace);
+        if(colorSpace == ColorSpace.CIELAB_94) {
+            double chromaOffset = Double.parseDouble(Controller.getInstance().chromaOffset.getText());
+            this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
+        }else{
+            this.calculator = new ColorDistanceCalculator(colorSpace);
+        }
     }
 
     private List<RgbColor> initialiseDrednotColors() {

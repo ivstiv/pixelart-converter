@@ -8,8 +8,13 @@ import java.util.List;
 public class ColorDistanceCalculator {
 
     private final ColorSpace colorSpace;
+    private double chromaOffset = 0;
 
     public ColorDistanceCalculator(ColorSpace colorSpace) {
+        this.colorSpace = colorSpace;
+    }
+    public ColorDistanceCalculator(ColorSpace colorSpace, double chromaOffset) {
+        this.chromaOffset = chromaOffset;
         this.colorSpace = colorSpace;
     }
 
@@ -134,7 +139,7 @@ public class ColorDistanceCalculator {
             da, db, dC got changed to Sqrt(pow()) because they were giving negative values
             which were causing NaN error int Sqrt method
          */
-        double dC = Math.sqrt(Math.pow(C1-C2, 2));
+        double dC = Math.sqrt(Math.pow(C1-C2, 2))*this.chromaOffset;
         double da = Math.sqrt(Math.pow(c1.getA()-c2.getA(), 2));
         double db = Math.sqrt(Math.pow(c1.getB()-c2.getB(), 2));
         double dH = Math.sqrt(da+db-dC);
