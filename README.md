@@ -11,16 +11,20 @@ Features:
 
 **Note that this has been made over a weekend without any testing or best practices and can have a lot of bugs. Please report them to me on discord SKDown#4341!**
 # Screenshots
-UI of the program:
+**UI of the program:**
+
 ![UI](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc1.png)
 
-Experiment showing all algorithms:
+**Experiment showing all algorithms:**
+
 ![Experiment 1](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc2.png)
 
-Useful case for making a pixel art:
+**Useful case for making a pixel art:**
+
 ![Case 1](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc3.png)
 
-Another one:
+**Another one:**
+
 ![Case 2](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc4.png)
 # Usage
 
