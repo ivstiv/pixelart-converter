@@ -5,10 +5,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -28,6 +26,8 @@ public class Controller {
     private String importImage, exportImage = null;
     @FXML Label selectedImage;
     @FXML ToggleGroup colorSpaceGroup;
+    @FXML CheckBox showColorID;
+    @FXML Slider fontSize, scaleRatio;
 
     public void selectImportImage() {
         FileDialog chooser = new FileDialog((Frame)null, "Select to import an image");
@@ -109,26 +109,26 @@ public class Controller {
             }
         }
 
-        int scale = 25;
+        int scale = (int) scaleRatio.getValue();
         BufferedImage displayImage = new BufferedImage(colors.length*scale, colors[0].length*scale, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = displayImage.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         g2.drawImage(drednotImage, 0, 0, displayImage.getWidth(), displayImage.getHeight(), null);
-        if(scale > 24) {
-            g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
-        }
+        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, (int) fontSize.getValue()));
 
         // i need a calculator here as well to put white text for black tiles
-        ColorDistanceCalculator calculator = new ColorDistanceCalculator(ColorSpace.RGB);
-        for (int x = 0; x < colors.length; x++) {
-            for (int y = 0; y < colors[x].length; y++) {
-                double distance = calculator.euclideanDistanceBetween(colors[x][y], new RgbColor(0,0,0));
-                if(distance < 50) {
-                    g2.setColor(Color.lightGray);
-                }else{
-                    g2.setColor(Color.black);
+        if(showColorID.isSelected()) {
+            ColorDistanceCalculator calculator = new ColorDistanceCalculator(ColorSpace.RGB);
+            for (int x = 0; x < colors.length; x++) {
+                for (int y = 0; y < colors[x].length; y++) {
+                    double distance = calculator.euclideanDistanceBetween(colors[x][y], new RgbColor(0,0,0));
+                    if(distance < 50) {
+                        g2.setColor(Color.lightGray);
+                    }else{
+                        g2.setColor(Color.black);
+                    }
+                    g2.drawString(colors[x][y].getId()+"", (float) (x*scale), (float) (y*scale+0.7*scale));
                 }
-                g2.drawString(colors[x][y].getId()+"", (float) (x*scale), (float) (y*scale+0.7*scale));
             }
         }
         g2.dispose();

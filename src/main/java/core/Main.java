@@ -18,7 +18,7 @@ public class Main extends Application {
         fxmlLoader.setController(new Controller());
         Parent root = fxmlLoader.load();
         primaryStage.setTitle("Drednot Pixel Art Converter");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root, 650, 400));
         primaryStage.show();
     }
 
