@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,16 @@ public class PixelArt {
     private List<RgbColor> initialiseDrednotColors() {
         BufferedReader bufferedReader = null;
         try {
-            bufferedReader = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("RGBValues.json").getFile()));
+            // i am reading in the file as stream and writing it to a file because of this:
+            // https://stackoverflow.com/questions/43811764/java-getclass-getclassloader-getresourcepath-fails-inside-maven-shaded-ja
+            InputStream is = getClass().getClassLoader().getResourceAsStream("RGBValues.json");
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);
+            File tempFile = File.createTempFile("aaa", "aaa", null);
+            OutputStream fos = new FileOutputStream(tempFile);
+            fos.write(buffer);
+
+            bufferedReader = new BufferedReader(new FileReader(tempFile));
             String jsonData = bufferedReader.lines().collect(Collectors.joining());
 
             // deserialize the data
@@ -55,6 +65,8 @@ public class PixelArt {
             }
             return colors;
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

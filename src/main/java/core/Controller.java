@@ -1,7 +1,6 @@
 package core;
 
 import com.dajudge.colordiff.RgbColor;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -9,18 +8,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import javax.management.Attribute;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.IntBuffer;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ResourceBundle;
@@ -84,8 +85,17 @@ public class Controller implements Initializable {
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             g2.drawImage(drednotImage, 0, 0, displayImage.getWidth(), displayImage.getHeight(), null);
 
-            Image image = SwingFXUtils.toFXImage(displayImage, null);
-            ImageView imageView = new ImageView(image);
+            WritableImage wr = null;
+            if (displayImage != null) {
+                wr = new WritableImage(displayImage.getWidth(), displayImage.getHeight());
+                PixelWriter pw = wr.getPixelWriter();
+                for (int x = 0; x < displayImage.getWidth(); x++) {
+                    for (int y = 0; y < displayImage.getHeight(); y++) {
+                        pw.setArgb(x, y, displayImage.getRGB(x, y));
+                    }
+                }
+            }
+            ImageView imageView = new ImageView(wr);
             Stage stage = new Stage();
             Group root = new Group(imageView);
             Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
@@ -103,8 +113,20 @@ public class Controller implements Initializable {
             String colorSpace = selectedRadioButton.getText();
 
             BufferedImage displayImage = getConvertedImage();
-            Image image = SwingFXUtils.toFXImage(displayImage, null);
-            ImageView imageView = new ImageView(image);
+            // I am writing it myself instead of using SwingFXUtils.toFXImage() because
+            // the library has been moved between java 8 and java 11 so the path is different
+            WritableImage wr = null;
+            if (displayImage != null) {
+                wr = new WritableImage(displayImage.getWidth(), displayImage.getHeight());
+                PixelWriter pw = wr.getPixelWriter();
+                for (int x = 0; x < displayImage.getWidth(); x++) {
+                    for (int y = 0; y < displayImage.getHeight(); y++) {
+                        pw.setArgb(x, y, displayImage.getRGB(x, y));
+                    }
+                }
+            }
+            //Image image = new ImageView(wr);
+            ImageView imageView = new ImageView(wr);
             Stage stage = new Stage();
             Group root = new Group(imageView);
             Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
@@ -128,10 +150,6 @@ public class Controller implements Initializable {
     private BufferedImage getConvertedImage() throws IOException {
         RadioButton selectedRadioButton = (RadioButton) colorSpaceGroup.getSelectedToggle();
         String colorSpace = selectedRadioButton.getText();
-
-        if(colorSpace.equals("CIELAB_94")) {
-
-        }
 
         PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace));
         DrednotColor[][] colors = pixelart.getDrednotColors();
