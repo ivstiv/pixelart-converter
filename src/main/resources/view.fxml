@@ -115,12 +115,15 @@
             <Insets bottom="10.0" left="10.0" />
          </GridPane.margin>
       </Button>
-      <Button mnemonicParsing="false" onAction="#showPreview" text="Preview Image" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+      <Button mnemonicParsing="false" onAction="#showPreview" text="Preview Image" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
          <GridPane.margin>
-            <Insets bottom="30.0" left="-5.0" top="95.0" />
+            <Insets bottom="30.0" left="10.0" top="110.0" />
          </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+         </padding>
       </Button>
-      <Hyperlink text="⚡ Github page" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+      <Hyperlink fx:id="github" text="⚡ Github page" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets bottom="10.0" left="60.0" />
          </GridPane.margin>
@@ -130,10 +133,18 @@
             <Insets bottom="10.0" right="10.0" />
          </GridPane.margin>
       </Label>
-      <CheckBox fx:id="showColorID" mnemonicParsing="false" selected="true" text="Show color IDs" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
+      <CheckBox fx:id="showColorID" mnemonicParsing="false" selected="true" text="Show color IDs" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets top="25.0" />
+            <Insets left="10.0" top="25.0" />
          </GridPane.margin>
       </CheckBox>
+      <Button mnemonicParsing="false" onAction="#showOriginal" text="Show Original" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+         <GridPane.margin>
+            <Insets left="10.0" top="5.0" />
+         </GridPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+         </padding>
+      </Button>
    </children>
 </GridPane>

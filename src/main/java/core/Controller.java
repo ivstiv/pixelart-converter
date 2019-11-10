@@ -3,6 +3,7 @@ package core;
 import com.dajudge.colordiff.RgbColor;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,16 +19,24 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable {
 
     private String importImage, exportImage = null;
     @FXML Label selectedImage;
     @FXML ToggleGroup colorSpaceGroup;
     @FXML CheckBox showColorID;
     @FXML Slider fontSize, scaleRatio;
+    @FXML Hyperlink github;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        github.setOnAction((event) -> Main.getInstance().getHostServices().showDocument("https://github.com/Ivstiv/drednot-pixelart-converter"));
+    }
 
     public void selectImportImage() {
         FileDialog chooser = new FileDialog((Frame)null, "Select to import an image");
@@ -49,41 +58,48 @@ public class Controller {
         }
     }
 
-    public void showPreview() throws IOException {
+    public void showOriginal() throws IOException {
         if(getImportImagePath() != null) {
+            // here colorspace is not used at all so no need to link it to the GUI
+            PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.CIEDE2000);
+            Color[][] colors = pixelart.getOriginalColors();
+            BufferedImage drednotImage = new BufferedImage(colors.length, colors[0].length, BufferedImage.TYPE_INT_RGB);
+            for (int x = 0; x < colors.length; x++) {
+                for (int y = 0; y < colors[x].length; y++) {
+                    drednotImage.setRGB(x, y, colors[x][y].getRGB());
+                }
+            }
 
-/*
-            int scale = 20;
+            int scale = (int) scaleRatio.getValue();
             BufferedImage displayImage = new BufferedImage(colors.length*scale, colors[0].length*scale, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = displayImage.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-            g2.drawImage(pixelart.getImage(), 0, 0, displayImage.getWidth(), displayImage.getHeight(), null);
-            g2.dispose();
-*/
+            g2.drawImage(drednotImage, 0, 0, displayImage.getWidth(), displayImage.getHeight(), null);
 
+            Image image = SwingFXUtils.toFXImage(displayImage, null);
+            ImageView imageView = new ImageView(image);
+            Stage stage = new Stage();
+            Group root = new Group(imageView);
+            Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
+            stage.setTitle("Image preview");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            stage.show();
+        }
+    }
 
+    public void showPreview() throws IOException {
+        if(getImportImagePath() != null) {
             BufferedImage displayImage = getConvertedImage();
             Image image = SwingFXUtils.toFXImage(displayImage, null);
             ImageView imageView = new ImageView(image);
             Stage stage = new Stage();
             Group root = new Group(imageView);
-            Scene scene = new Scene(root, displayImage.getWidth(), displayImage.getHeight());
+            Scene scene = new Scene(root, displayImage.getWidth()-12, displayImage.getHeight()-12);
             stage.setTitle("Image preview");
+            stage.setResizable(false);
             stage.setScene(scene);
             stage.show();
-/*
-            BufferedImage newImage = new BufferedImage(colors.length*scale, colors[0].length*scale, BufferedImage.TYPE_INT_RGB);
-            for (int x = 0, offsetX = 0; x < colors.length; x++) {
-                for (int y = 0, offsetY = 0; y < colors[x].length; y++) {
-                    newImage.setRGB(x+offsetX, y+offsetY, colors[x][y].getRGB());
-
-                    //for(int s = 1; s < scale; s++, offsetY++) {
-                        //System.out.println("wut"+s);
-                    //    newImage.setRGB(x, y+s+offsetY, colors[x][y].getRGB());
-                   // }
-                }
-            }
-*/
         }
     }
 
@@ -158,15 +174,4 @@ public class Controller {
             return this.importImage;
         }
     }
-/*
-    public String getExportImagePath() {
-        if(exportImage == null) {
-            Alert a = new Alert(Alert.AlertType.WARNING);
-            a.setHeaderText("You need to select an image first!");
-            a.show();
-            return null;
-        }else{
-            return this.exportImage;
-        }
-    }*/
 }

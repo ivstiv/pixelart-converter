@@ -6,13 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.Objects;
-
 public class Main extends Application {
+
+    static Main instance;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        //Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("view.fxml")));
+        instance = this;
+
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getClassLoader().getResource("view.fxml"));
         fxmlLoader.setController(new Controller());
@@ -30,5 +31,9 @@ public class Main extends Application {
         }else{
             launch(args);
         }
+    }
+
+    public static Main getInstance() {
+        return instance;
     }
 }
