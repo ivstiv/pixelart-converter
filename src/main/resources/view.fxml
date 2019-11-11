@@ -57,7 +57,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <RadioButton mnemonicParsing="false" selected="true" text="CIEDE2000" GridPane.rowIndex="2">
+      <RadioButton mnemonicParsing="false" text="CIEDE2000" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="10.0" top="-140.0" />
          </GridPane.margin>
@@ -83,7 +83,7 @@
             <Insets left="130.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="scaleRatio" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" value="22.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+      <Slider fx:id="scaleRatio" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" value="18.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="130.0" right="10.0" top="-220.0" />
          </GridPane.margin>
@@ -96,7 +96,7 @@
             <Insets left="130.0" top="-160.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="fontSize" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="12.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+      <Slider fx:id="fontSize" blockIncrement="1.0" majorTickUnit="1.0" max="32.0" min="1.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="11.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="130.0" right="10.0" top="-95.0" />
          </GridPane.margin>
@@ -136,7 +136,7 @@
             <Insets left="10.0" top="-90.0" />
          </GridPane.margin>
       </RadioButton>
-      <RadioButton mnemonicParsing="false" text="CIELAB_94" toggleGroup="$colorSpaceGroup" GridPane.rowIndex="2">
+      <RadioButton mnemonicParsing="false" selected="true" text="CIELAB_94" toggleGroup="$colorSpaceGroup" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="10.0" top="-40.0" />
          </GridPane.margin>
