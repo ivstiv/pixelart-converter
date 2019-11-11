@@ -110,4 +110,25 @@ public class PixelArt {
     public BufferedImage getImage() {
         return image;
     }
+
+    public void resize(String outputImagePath, int scaledWidth, int scaledHeight)
+            throws IOException {
+        BufferedImage inputImage = this.image;
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth,
+                scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+
+        // extracts extension of output file
+        String formatName = outputImagePath.substring(outputImagePath
+                .lastIndexOf(".") + 1);
+
+        // writes to output file
+        ImageIO.write(outputImage, formatName, new File(outputImagePath));
+    }
 }

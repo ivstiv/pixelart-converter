@@ -54,7 +54,7 @@ public class Controller implements Initializable {
         String file = chooser.getDirectory()+chooser.getFile();
         String extension = file.substring(file.length()-3, file.length());
         if(!file.equals("nullnull")) {
-            if(!extension.equalsIgnoreCase("png")) {
+            if(!extension.equalsIgnoreCase("png") && false) {
                 Alert a = new Alert(Alert.AlertType.ERROR);
                 a.setContentText("Selected file:\n"+file);
                 a.setHeaderText("You can only choose PNG images!");
@@ -208,5 +208,13 @@ public class Controller implements Initializable {
         }else{
             return this.importImage;
         }
+    }
+
+    public void resizeImage() throws IOException {
+        RadioButton selectedRadioButton = (RadioButton) colorSpaceGroup.getSelectedToggle();
+        String colorSpace = selectedRadioButton.getText();
+
+        PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace));
+        pixelart.resize("test.png", 130, 200);
     }
 }
