@@ -26,9 +26,9 @@ Features:
 **Another one:**
 
 ![Case 2](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc4.png)
-# Usage
+# Usage and Download
 
-You can download the compiled jar bundled with all dependencies from here.
+You can download the compiled jar bundled with all dependencies from [here](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/drednot-pixelart-converter-1.0.jar?raw=true).
 The UI is pretty self-explanatory,
  just don't feed the program large images. It is supposed to work with pixel arts with 1 to 1 ratio e.g sprites.  
  
