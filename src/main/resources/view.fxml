@@ -101,7 +101,7 @@
             <Insets left="130.0" right="10.0" top="-95.0" />
          </GridPane.margin>
       </Slider>
-      <Button mnemonicParsing="false" text="Help" textAlignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+      <Button mnemonicParsing="false" onAction="#openHelp" text="Help" textAlignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" />
          </GridPane.margin>

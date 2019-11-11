@@ -2,8 +2,10 @@ package core;
 
 import com.dajudge.colordiff.RgbColor;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -216,5 +218,15 @@ public class Controller implements Initializable {
 
         PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace));
         pixelart.resize("test.png", 130, 200);
+    }
+
+    public void openHelp() throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getClassLoader().getResource("new-view.fxml"));
+        Parent root = fxmlLoader.load();
+        stage.setTitle("Drednot Pixel Art Converter");
+        stage.setScene(new Scene(root, 1280, 720));
+        stage.show();
     }
 }
