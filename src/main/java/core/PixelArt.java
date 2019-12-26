@@ -34,6 +34,13 @@ public class PixelArt {
         }
     }
 
+    public PixelArt(String path, ColorSpace colorSpace, double chromaOffset) throws IOException {
+        BufferedImage image = ImageIO.read(new File(path));
+        this.image = image;
+        this.drednotColorPalette = initialiseDrednotColors();
+        this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
+    }
+
     private List<RgbColor> initialiseDrednotColors() {
         BufferedReader bufferedReader = null;
         try {
