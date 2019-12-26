@@ -22,7 +22,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Import Image" />
+            <MenuItem mnemonicParsing="false" onAction="#selectImportImage" text="Import Image" />
             <MenuItem mnemonicParsing="false" text="Export Image" />
                   <MenuItem mnemonicParsing="false" text="Import color palette" />
             <MenuItem mnemonicParsing="false" text="Quit" />
@@ -51,7 +51,7 @@
     </MenuBar>
       <HBox prefHeight="35.0" prefWidth="640.0">
          <children>
-            <Button mnemonicParsing="false">
+            <Button fx:id="zoomInButton" mnemonicParsing="false">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -66,7 +66,7 @@
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false">
+            <Button fx:id="zoomOutButton" mnemonicParsing="false">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -147,13 +147,9 @@
             </Button>
          </children>
       </HBox>
-      <BorderPane prefHeight="653.0" prefWidth="1280.0">
+      <BorderPane fx:id="borderPane" prefHeight="653.0" prefWidth="1280.0">
          <center>
-            <ImageView fitHeight="520.0" fitWidth="1167.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-               <image>
-                  <Image url="@images/dog-pixel.png" />
-               </image>
-            </ImageView>
+            <ImageView fx:id="imagePreview" fitHeight="520.0" fitWidth="1167.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
   </children>

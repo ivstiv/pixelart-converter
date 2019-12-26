@@ -56,7 +56,7 @@ public class Controller implements Initializable {
         String file = chooser.getDirectory()+chooser.getFile();
         String extension = file.substring(file.length()-3, file.length());
         if(!file.equals("nullnull")) {
-            if(!extension.equalsIgnoreCase("png") && false) {
+            if(!extension.equalsIgnoreCase("png")) {
                 Alert a = new Alert(Alert.AlertType.ERROR);
                 a.setContentText("Selected file:\n"+file);
                 a.setHeaderText("You can only choose PNG images!");
@@ -217,13 +217,15 @@ public class Controller implements Initializable {
         String colorSpace = selectedRadioButton.getText();
 
         PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace));
-        pixelart.resize("test.png", 130, 200);
+        pixelart.resize("test.png", 43, 43
+        );
     }
 
     public void openHelp() throws IOException {
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getClassLoader().getResource("new-view.fxml"));
+        fxmlLoader.setController(new NewController());
         Parent root = fxmlLoader.load();
         stage.setTitle("Drednot Pixel Art Converter");
         stage.setScene(new Scene(root, 1280, 720));
