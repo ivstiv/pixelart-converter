@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -65,6 +66,37 @@ public class NewController implements Initializable {
                 drednotImage.setRGB(x, y, colors[x][y].getRGBValue());
             }
         }
+
+/*
+        // Pepa test export numbers
+        try {
+            FileWriter myWriter = new FileWriter("data.csv");
+            StringBuilder line = new StringBuilder();
+
+            DrednotColor[][] transposed = new DrednotColor[colors[0].length][colors.length];
+            for (int i = 0; i < colors.length; i++) {
+                for (int j = 0; j < colors[i].length; j++) {
+                    System.out.println(i+" | "+j);
+                    transposed[j][i] = colors[i][j];
+                }
+            }
+
+            for (int x = 0; x < transposed.length; x++) {
+                for (int y = 0; y < transposed[x].length; y++) {
+                    line.append(transposed[x][y].getId()).append(",");
+                }
+                //line.replace(line.toString().lastIndexOf(","), line.toString().lastIndexOf(","),"\n");
+                String finishedLine = line.toString().replaceAll(",$", "\n");
+                myWriter.write(finishedLine);
+                line.setLength(0);
+            }
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+*/
 
 
         int scale = 1;

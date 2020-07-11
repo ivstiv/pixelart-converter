@@ -46,7 +46,7 @@ public class PixelArt {
         try {
             // i am reading in the file as stream and writing it to a file because of this:
             // https://stackoverflow.com/questions/43811764/java-getclass-getclassloader-getresourcepath-fails-inside-maven-shaded-ja
-            InputStream is = getClass().getClassLoader().getResourceAsStream("RGBValues.json");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("36RGB.json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             File tempFile = File.createTempFile("aaa", "aaa", null);
