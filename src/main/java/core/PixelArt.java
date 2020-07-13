@@ -19,23 +19,20 @@ public class PixelArt {
     private final BufferedImage image;
     private final List<RgbColor> drednotColorPalette;
     private final ColorDistanceCalculator calculator;
+    private final String colorPalette;
 
-    public PixelArt(String path, ColorSpace colorSpace) throws IOException {
-        BufferedImage image = ImageIO.read(new File(path));
+
+    public PixelArt(BufferedImage image, ColorSpace colorSpace, double chromaOffset, String colorPalette) throws IOException {
         this.image = image;
+        this.colorPalette = colorPalette;
         this.drednotColorPalette = initialiseDrednotColors();
-        if(colorSpace == ColorSpace.CIELAB_94) {
-            double chromaOffset = Double.parseDouble(Controller.getInstance().chromaOffset.getText());
-            this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
-        }else{
-            this.calculator = new ColorDistanceCalculator(colorSpace);
-        }
+        this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
     }
 
-    public PixelArt(BufferedImage image, ColorSpace colorSpace, double chromaOffset) throws IOException {
-        //BufferedImage image = ImageIO.read(new File(path));
+    public PixelArt(BufferedImage image, ColorSpace colorSpace, double chromaOffset, List<RgbColor> customPalette) throws IOException {
         this.image = image;
-        this.drednotColorPalette = initialiseDrednotColors();
+        this.colorPalette = "Imported";
+        this.drednotColorPalette = customPalette;
         this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
     }
 
@@ -44,7 +41,7 @@ public class PixelArt {
         try {
             // i am reading in the file as stream and writing it to a file because of this:
             // https://stackoverflow.com/questions/43811764/java-getclass-getclassloader-getresourcepath-fails-inside-maven-shaded-ja
-            InputStream is = getClass().getClassLoader().getResourceAsStream("palettes/Drednot.json");
+            InputStream is = getClass().getClassLoader().getResourceAsStream(this.colorPalette);
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             File tempFile = File.createTempFile("aaa", "aaa", null);

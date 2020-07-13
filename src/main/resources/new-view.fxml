@@ -26,7 +26,7 @@
           <items>
             <MenuItem mnemonicParsing="false" onAction="#importImage" text="Import Image" />
             <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Export Image" />
-                  <MenuItem mnemonicParsing="false" text="Import color palette" />
+                  <MenuItem mnemonicParsing="false" onAction="#importPalette" text="Import color palette" />
                   <MenuItem mnemonicParsing="false" onAction="#exportCSV" text="Convert &amp; Export as CSV" />
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
@@ -50,12 +50,17 @@
                      <items>
                         <RadioMenuItem mnemonicParsing="false" selected="true" text="Drednot">
                            <toggleGroup>
-                              <ToggleGroup fx:id="colorSpaceGroup1" />
+                              <ToggleGroup fx:id="colorPaletteGroup" />
                            </toggleGroup>
                         </RadioMenuItem>
-                        <RadioMenuItem mnemonicParsing="false" text="Faber Castell 36" toggleGroup="$colorSpaceGroup1" />
-                        <RadioMenuItem mnemonicParsing="false" text="Black and White" toggleGroup="$colorSpaceGroup1" />
-                        <RadioMenuItem mnemonicParsing="false" text="RGB" toggleGroup="$colorSpaceGroup1" />
+                        <RadioMenuItem mnemonicParsing="false" text="Faber Castell 36" toggleGroup="$colorPaletteGroup" />
+                        <RadioMenuItem mnemonicParsing="false" text="Black and White" toggleGroup="$colorPaletteGroup" />
+                        <RadioMenuItem mnemonicParsing="false" text="RGB" toggleGroup="$colorPaletteGroup" />
+                        <RadioMenuItem mnemonicParsing="false" text="Imported" toggleGroup="$colorPaletteGroup">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="colorPaletteGroup1" />
+                           </toggleGroup>
+                        </RadioMenuItem>
                      </items>
                   </Menu>
           </items>

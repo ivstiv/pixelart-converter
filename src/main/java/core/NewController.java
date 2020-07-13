@@ -1,6 +1,10 @@
 package core;
 
 import com.dajudge.colordiff.RgbColor;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,23 +20,26 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class NewController implements Initializable {
 
     private String importImagePath = null;
     @FXML ImageView imagePreview;
     @FXML Button zoomInButton, zoomOutButton, convertButton, showOriginalButton;
-    @FXML ToggleGroup colorSpaceGroup;
+    // you will not find these groups in SceneBuilder.. check the fxml file :D
+    @FXML ToggleGroup colorSpaceGroup, colorPaletteGroup;
     @FXML CheckBox showColorID;
     @FXML TextField scaleRatio, fontSize, chromaOffset;
     @FXML Label statusLabel;
     private DisplayedImage displayedImage;
+    private List<RgbColor> customPalette = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,7 +100,14 @@ public class NewController implements Initializable {
             chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
         }
 
-        PixelArt pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+        String colorPalettePath = getColorPalettePath();
+        PixelArt pixelart;
+        if(colorPalettePath.equalsIgnoreCase("Imported")) {
+            pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
+        }else{
+            pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
+        }
+
         DrednotColor[][] colors = pixelart.getDrednotColors();
         BufferedImage drednotImage = new BufferedImage(colors.length, colors[0].length, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < colors.length; x++) {
@@ -136,8 +150,64 @@ public class NewController implements Initializable {
         return displayImage;
     }
 
+    private String getColorPalettePath() {
+        RadioMenuItem selectedRadioButton = (RadioMenuItem) colorPaletteGroup.getSelectedToggle();
+        String colorPalette = selectedRadioButton.getText();
+
+        switch(colorPalette) {
+            case "Drednot":
+                return "palettes/Drednot.json";
+            case "Faber Castell 36":
+                return "palettes/Faber_Castell_36.json";
+            case "Black and White":
+                return "palettes/BlackWhite.json";
+            case "RGB":
+                return "palettes/RGB.json";
+            case "Imported":
+                return "Imported";
+            default:
+                return "palettes/Drednot.json";
+        }
+    }
+
+    public void importPalette() throws FileNotFoundException {
+        String path = promptImportPalettePath();
+
+        if(path != null) {
+            File tempFile = new File(path);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(tempFile));
+            String jsonData = bufferedReader.lines().collect(Collectors.joining());
+
+            // deserialize the data
+            JsonParser parser = new JsonParser();
+            JsonElement tradeElement = parser.parse(jsonData);
+            JsonArray colorsJson = tradeElement.getAsJsonArray();
+
+            Gson gson = new Gson();
+            for(JsonElement el : colorsJson) {
+                int id = el.getAsJsonObject().get("ID").getAsInt();
+                int r = el.getAsJsonObject().get("R").getAsInt();
+                int g = el.getAsJsonObject().get("G").getAsInt();
+                int b = el.getAsJsonObject().get("B").getAsInt();
+                customPalette.add(new DrednotColor(r, g, b, id));
+            }
+            showWarning("Custom palette has been imported!\nChange the palette from the Modify menu to \"Imported\" in order for it to be applied.");
+        }
+    }
+
+    private String promptImportPalettePath() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select to import a palette");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Data files", "*.json")
+        );
+        File file = chooser.showOpenDialog(new Stage());
+        // file is null when user cancels the selection
+        return file == null ? null : file.toPath().toString();
+    }
+
     public void resize() throws IOException {
-        // export only if there is imported image
+        // resize only if there is imported image
         if(this.importImagePath == null) {
             showWarning("You need to import an image first!");
             return;
@@ -266,7 +336,14 @@ public class NewController implements Initializable {
                 chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
             }
 
-            PixelArt pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+            String colorPalettePath = getColorPalettePath();
+            PixelArt pixelart;
+            if(colorPalettePath.equalsIgnoreCase("Imported")) {
+                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
+            }else{
+                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
+            }
+
             DrednotColor[][] colors = pixelart.getDrednotColors();
 
             FileWriter myWriter = new FileWriter(exportPath);
