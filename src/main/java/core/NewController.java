@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class NewController implements Initializable {
@@ -44,6 +45,10 @@ public class NewController implements Initializable {
             displayedImage.zoomOut();
         });
 
+        showOriginalButton.setOnAction(event -> {
+            this.displayedImage.showOriginalImage();
+        });
+
         convertButton.setOnAction(event -> {
             if(this.importImagePath == null) {
                 showWarning("You need to import an image first!");
@@ -58,8 +63,10 @@ public class NewController implements Initializable {
                 long startTime = System.currentTimeMillis();
                 try {
                     BufferedImage convertedImage = getConvertedImage();
+                    // if the image is too big the heap fills up and ugly things happen..
+                    // so this null check is required
                     if(convertedImage != null)
-                        displayedImage.setConvertedImage(getConvertedImage());
+                        displayedImage.setConvertedImage(convertedImage);
                 } catch (OutOfMemoryError | IOException e) {
                     e.printStackTrace();
                     setStatus("Error: Couldn't convert the image. May be it is too big?");
@@ -86,7 +93,7 @@ public class NewController implements Initializable {
             chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
         }
 
-        PixelArt pixelart = new PixelArt(this.importImagePath, ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+        PixelArt pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue);
         DrednotColor[][] colors = pixelart.getDrednotColors();
         BufferedImage drednotImage = new BufferedImage(colors.length, colors[0].length, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < colors.length; x++) {
@@ -94,7 +101,7 @@ public class NewController implements Initializable {
                 drednotImage.setRGB(x, y, colors[x][y].getRGBValue());
             }
         }
-        
+
         int scale = 1;
         int fontSizeValue = 1;
         if(isNumeric(scaleRatio.getText())) {
@@ -129,23 +136,74 @@ public class NewController implements Initializable {
         return displayImage;
     }
 
-    public static boolean isNumeric(String s) {
-        try {
-            double v = Double.parseDouble(s);
-            return true;
-        } catch (NumberFormatException nfe) {}
-        return false;
+    public void resize() throws IOException {
+        // export only if there is imported image
+        if(this.importImagePath == null) {
+            showWarning("You need to import an image first!");
+            return;
+        }
+
+        String newSize = promptResizeImage();
+        if(newSize.isEmpty()) return;
+        // regex matches any positive "intxint"
+        if(!newSize.matches("\\d+x\\d+")) {
+            showWarning("Invalid size format!");
+            return;
+        }
+
+        String widthXheight[] = newSize.split("x");
+        BufferedImage newImage = getResizedImage(
+                this.importImagePath,
+                Integer.parseInt(widthXheight[0]),
+                Integer.parseInt(widthXheight[1])
+        );
+
+        displayedImage.setOriginalImage(newImage);
+        setStatus("Status: The original image has been resized to "+newSize+".");
+    }
+
+    private String promptResizeImage() {
+        TextInputDialog resizePrompt = new TextInputDialog();
+        resizePrompt.setContentText("New size (Width)x(Height):");
+        resizePrompt.setHeaderText("Change the size of the original image.\nExample: 80x80");
+        resizePrompt.setTitle("Resize Image");
+        Optional<String> result = resizePrompt.showAndWait();
+        if(result.isPresent()) {
+            return result.get().trim();
+        }
+        return "";
+    }
+
+    private BufferedImage getResizedImage(String imagePath, int scaledWidth, int scaledHeight) throws IOException {
+        BufferedImage inputImage = ImageIO.read(new File(imagePath));
+
+        // creates output image
+        BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
+
+        // scales the input image to the output image
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledWidth, scaledHeight, null);
+        g2d.dispose();
+        return outputImage;
+
+        // extracts extension of output file
+        //String formatName = outputImagePath.substring(outputImagePath.lastIndexOf(".") + 1);
+
+        // writes to output file
+        //ImageIO.write(outputImage, formatName, new File(outputImagePath));
     }
 
     // this is being called from the UI Import menu
-    public void importImage() {
+    public void importImage() throws IOException {
         this.importImagePath = promptImportImagePath();
         if(this.importImagePath != null) {
             System.out.println("Imported image:"+importImagePath);
             setStatus("Status: Ready to convert.");
             // setup the preview
-            imagePreview.setImage(new Image("file:///"+importImagePath));
+            //imagePreview.setImage(new Image("file:///"+importImagePath));
             displayedImage = new DisplayedImage(imagePreview);
+            //displayedImage.setOriginalImage(new Image("file:///"+importImagePath));
+            displayedImage.setOriginalImage(ImageIO.read(new File(importImagePath)));
             displayedImage.setup();
         }
     }
@@ -189,6 +247,7 @@ public class NewController implements Initializable {
         return file == null ? null : file.toPath().toString();
     }
 
+    // this is being called from the UI Export menu
     public void exportCSV() throws IOException {
         // export only if there is imported image
         if(this.importImagePath == null) {
@@ -207,7 +266,7 @@ public class NewController implements Initializable {
                 chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
             }
 
-            PixelArt pixelart = new PixelArt(this.importImagePath, ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+            PixelArt pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue);
             DrednotColor[][] colors = pixelart.getDrednotColors();
 
             FileWriter myWriter = new FileWriter(exportPath);
@@ -244,6 +303,8 @@ public class NewController implements Initializable {
         return file == null ? null : file.toPath().toString();
     }
 
+    /* Utility methods */
+
     private void showWarning(String text) {
         Alert a = new Alert(Alert.AlertType.NONE);
         a.setHeaderText(text);
@@ -253,5 +314,13 @@ public class NewController implements Initializable {
 
     public void setStatus(String text) {
         Platform.runLater(() -> statusLabel.setText(text));
+    }
+
+    private boolean isNumeric(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException ignored) {}
+        return false;
     }
 }

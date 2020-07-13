@@ -1,6 +1,5 @@
 package core;
 
-import com.dajudge.colordiff.ColorDiff;
 import com.dajudge.colordiff.RgbColor;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,7 +10,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +32,8 @@ public class PixelArt {
         }
     }
 
-    public PixelArt(String path, ColorSpace colorSpace, double chromaOffset) throws IOException {
-        BufferedImage image = ImageIO.read(new File(path));
+    public PixelArt(BufferedImage image, ColorSpace colorSpace, double chromaOffset) throws IOException {
+        //BufferedImage image = ImageIO.read(new File(path));
         this.image = image;
         this.drednotColorPalette = initialiseDrednotColors();
         this.calculator = new ColorDistanceCalculator(colorSpace, chromaOffset);
@@ -46,7 +44,7 @@ public class PixelArt {
         try {
             // i am reading in the file as stream and writing it to a file because of this:
             // https://stackoverflow.com/questions/43811764/java-getclass-getclassloader-getresourcepath-fails-inside-maven-shaded-ja
-            InputStream is = getClass().getClassLoader().getResourceAsStream("36RGB.json");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("palettes/Drednot.json");
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
             File tempFile = File.createTempFile("aaa", "aaa", null);

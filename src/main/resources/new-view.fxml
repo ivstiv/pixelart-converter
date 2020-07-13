@@ -33,7 +33,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Modify">
           <items>
-            <MenuItem mnemonicParsing="false" text="Resize" />
+            <MenuItem mnemonicParsing="false" onAction="#resize" text="Resize" />
                   <Menu mnemonicParsing="false" text="Color space">
                      <items>
                         <RadioMenuItem mnemonicParsing="false" text="RGB">

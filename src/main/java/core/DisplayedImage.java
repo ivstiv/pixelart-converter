@@ -17,23 +17,15 @@ import java.awt.image.BufferedImage;
 public class DisplayedImage {
 
     private ImageView imagePreview;
-    private ImageView originalImageView;
+    private BufferedImage originalImage, convertedImage;
     private double previewImageWidth, previewImageHeight;
     private final DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
 
-    public DisplayedImage(ImageView imageView) {
-        this.imagePreview = imageView;
-        this.originalImageView = imageView;
+    public DisplayedImage(ImageView originalImage) {
+        this.imagePreview = originalImage;
     }
 
     public void setup() {
-        previewImageHeight = imagePreview.getImage().getHeight();
-        previewImageWidth = imagePreview.getImage().getWidth();
-        imagePreview.setFitWidth(zoomProperty.get() * 6);
-        imagePreview.setFitHeight(zoomProperty.get() * 6);
-
-        resetZoom(imagePreview, previewImageWidth, previewImageHeight);
-
         // listener for changes of the zoom
         zoomProperty.addListener(arg0 -> {
             imagePreview.setFitWidth(zoomProperty.get() * 6);
@@ -64,13 +56,11 @@ public class DisplayedImage {
             Rectangle2D viewport = imagePreview.getViewport();
 
             double scale = clamp(Math.pow(1.01, delta),
-
                     // don't scale so we're zoomed in to fewer than MIN_PIXELS in any direction:
                     Math.min(10 / viewport.getWidth(), 10 / viewport.getHeight()),
 
                     // don't scale so that we're bigger than image dimensions:
                     Math.max(previewImageWidth / viewport.getWidth(), previewImageHeight / viewport.getHeight())
-
             );
 
             Point2D mouse = imageViewToImage(imagePreview, new Point2D(e.getX(), e.getY()));
@@ -81,11 +71,8 @@ public class DisplayedImage {
             // To keep the visual point under the mouse from moving, we need
             // (x - newViewportMinX) / (x - currentViewportMinX) = scale
             // where x is the mouse X coordinate in the image
-
             // solving this for newViewportMinX gives
-
             // newViewportMinX = x - (x - currentViewportMinX) * scale
-
             // we then clamp this value so the image never scrolls out
             // of the imageview:
 
@@ -153,26 +140,46 @@ public class DisplayedImage {
         return value;
     }
 
-    public void setConvertedImage(BufferedImage newImage) {
-        // I am writing it myself instead of using SwingFXUtils.toFXImage() because
-        // the library has been moved between java 8 and java 11 so the path is different
-        WritableImage wr = null;
-        if (newImage != null) {
-            wr = new WritableImage(newImage.getWidth(), newImage.getHeight());
-            PixelWriter pw = wr.getPixelWriter();
-            for (int x = 0; x < newImage.getWidth(); x++) {
-                for (int y = 0; y < newImage.getHeight(); y++) {
-                    pw.setArgb(x, y, newImage.getRGB(x, y));
-                }
-            }
-        }
+    public BufferedImage getOriginalImage() {
+        return this.originalImage;
+    }
 
-        imagePreview.setImage(wr);
+    public void showOriginalImage() {
+        imagePreview.setImage(bufferedToWritableImage(originalImage));
+        refreshViewport();
+    }
+
+    public void setConvertedImage(BufferedImage newImage) {
+        this.convertedImage = newImage;
+        imagePreview.setImage(bufferedToWritableImage(newImage));
+        refreshViewport();
+    }
+
+    public void setOriginalImage(BufferedImage newImage) {
+        this.originalImage = newImage;
+        imagePreview.setImage(bufferedToWritableImage(newImage));
+        refreshViewport();
+    }
+
+    private void refreshViewport() {
         previewImageHeight = imagePreview.getImage().getHeight();
         previewImageWidth = imagePreview.getImage().getWidth();
         imagePreview.setFitWidth(zoomProperty.get() * 6);
         imagePreview.setFitHeight(zoomProperty.get() * 6);
 
         resetZoom(imagePreview, previewImageWidth, previewImageHeight);
+    }
+
+    private WritableImage bufferedToWritableImage(BufferedImage buffered) {
+        // I am writing it myself instead of using SwingFXUtils.toFXImage() because
+        // the library has been moved between java 8 and java 11 so the path is different
+        WritableImage wr = new WritableImage(buffered.getWidth(), buffered.getHeight());
+        PixelWriter pw = wr.getPixelWriter();
+        for (int x = 0; x < buffered.getWidth(); x++) {
+            for (int y = 0; y < buffered.getHeight(); y++) {
+                pw.setArgb(x, y, buffered.getRGB(x, y));
+            }
+        }
+        return wr;
     }
 }
