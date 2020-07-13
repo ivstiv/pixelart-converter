@@ -27,7 +27,7 @@
             <MenuItem mnemonicParsing="false" onAction="#importImage" text="Import Image" />
             <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Export Image" />
                   <MenuItem mnemonicParsing="false" text="Import color palette" />
-                  <MenuItem mnemonicParsing="false" text="Export converted image in csv" />
+                  <MenuItem mnemonicParsing="false" onAction="#exportCSV" text="Convert &amp; Export as CSV" />
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
@@ -44,6 +44,18 @@
                         <RadioMenuItem mnemonicParsing="false" text="CIEDE2000" toggleGroup="$colorSpaceGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="CIELAB_76" toggleGroup="$colorSpaceGroup" />
                         <RadioMenuItem mnemonicParsing="false" selected="true" text="CIELAB_94" toggleGroup="$colorSpaceGroup" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Color palettes">
+                     <items>
+                        <RadioMenuItem mnemonicParsing="false" selected="true" text="Drednot">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="colorSpaceGroup1" />
+                           </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem mnemonicParsing="false" text="Faber Castell 36" toggleGroup="$colorSpaceGroup1" />
+                        <RadioMenuItem mnemonicParsing="false" text="Black and White" toggleGroup="$colorSpaceGroup1" />
+                        <RadioMenuItem mnemonicParsing="false" text="RGB" toggleGroup="$colorSpaceGroup1" />
                      </items>
                   </Menu>
           </items>

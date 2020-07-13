@@ -94,39 +94,7 @@ public class NewController implements Initializable {
                 drednotImage.setRGB(x, y, colors[x][y].getRGBValue());
             }
         }
-
-/*
-        // Pepa test export numbers
-        try {
-            FileWriter myWriter = new FileWriter("data.csv");
-            StringBuilder line = new StringBuilder();
-
-            DrednotColor[][] transposed = new DrednotColor[colors[0].length][colors.length];
-            for (int i = 0; i < colors.length; i++) {
-                for (int j = 0; j < colors[i].length; j++) {
-                    System.out.println(i+" | "+j);
-                    transposed[j][i] = colors[i][j];
-                }
-            }
-
-            for (int x = 0; x < transposed.length; x++) {
-                for (int y = 0; y < transposed[x].length; y++) {
-                    line.append(transposed[x][y].getId()).append(",");
-                }
-                //line.replace(line.toString().lastIndexOf(","), line.toString().lastIndexOf(","),"\n");
-                String finishedLine = line.toString().replaceAll(",$", "\n");
-                myWriter.write(finishedLine);
-                line.setLength(0);
-            }
-            myWriter.close();
-            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
-*/
-
-
+        
         int scale = 1;
         int fontSizeValue = 1;
         if(isNumeric(scaleRatio.getText())) {
@@ -216,6 +184,61 @@ public class NewController implements Initializable {
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png")
         );
+        File file = chooser.showSaveDialog(new Stage());
+        // file is null when user cancels the selection
+        return file == null ? null : file.toPath().toString();
+    }
+
+    public void exportCSV() throws IOException {
+        // export only if there is imported image
+        if(this.importImagePath == null) {
+            showWarning("You need to import an image first!");
+            return;
+        }
+
+        String exportPath = promptExportCSVPath();
+        if(exportPath != null) {
+
+            RadioMenuItem selectedRadioButton = (RadioMenuItem) colorSpaceGroup.getSelectedToggle();
+            String colorSpace = selectedRadioButton.getText();
+
+            double chromaOffsetValue = 0.2;
+            if(isNumeric(chromaOffset.getText())) {
+                chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
+            }
+
+            PixelArt pixelart = new PixelArt(this.importImagePath, ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+            DrednotColor[][] colors = pixelart.getDrednotColors();
+
+            FileWriter myWriter = new FileWriter(exportPath);
+            StringBuilder line = new StringBuilder();
+
+            DrednotColor[][] transposed = new DrednotColor[colors[0].length][colors.length];
+            for (int i = 0; i < colors.length; i++) {
+                for (int j = 0; j < colors[i].length; j++) {
+                    //System.out.println(i+" | "+j);
+                    transposed[j][i] = colors[i][j];
+                }
+            }
+
+            for (int x = 0; x < transposed.length; x++) {
+                for (int y = 0; y < transposed[x].length; y++) {
+                    line.append(transposed[x][y].getId()).append(",");
+                }
+
+                String finishedLine = line.toString().replaceAll(",$", "\n");
+                myWriter.write(finishedLine);
+                line.setLength(0);
+            }
+            myWriter.close();
+            System.out.println("Successfully exported as CSV file!");
+            setStatus("Status: Successfully exported as CSV file!");
+        }
+    }
+
+    private String promptExportCSVPath() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Export converted colours to CSV");
         File file = chooser.showSaveDialog(new Stage());
         // file is null when user cancels the selection
         return file == null ? null : file.toPath().toString();

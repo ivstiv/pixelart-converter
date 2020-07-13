@@ -14,13 +14,22 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         instance = this;
 
+//        FXMLLoader fxmlLoader = new FXMLLoader();
+//        fxmlLoader.setLocation(getClass().getClassLoader().getResource("view.fxml"));
+//        fxmlLoader.setController(new Controller());
+//        Parent root = fxmlLoader.load();
+//        primaryStage.setTitle("Drednot Pixel Art Converter");
+//        primaryStage.setScene(new Scene(root, 680, 550));
+//        primaryStage.show();
+
+        Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getClassLoader().getResource("view.fxml"));
-        fxmlLoader.setController(new Controller());
+        fxmlLoader.setLocation(getClass().getClassLoader().getResource("new-view.fxml"));
+        fxmlLoader.setController(new NewController());
         Parent root = fxmlLoader.load();
-        primaryStage.setTitle("Drednot Pixel Art Converter");
-        primaryStage.setScene(new Scene(root, 680, 550));
-        primaryStage.show();
+        stage.setTitle("Pixel Art Converter");
+        stage.setScene(new Scene(root, 1280, 720));
+        stage.show();
     }
 
 
