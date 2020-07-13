@@ -8,9 +8,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -18,8 +22,7 @@ import java.util.ResourceBundle;
 
 public class NewController implements Initializable {
 
-    private String importImagePath;
-    private String[] permittedExtensions = {"png", "jpg", "jpeg"};
+    private String importImagePath = null;
     @FXML ImageView imagePreview;
     @FXML Button zoomInButton, zoomOutButton, convertButton;
     @FXML ToggleGroup colorSpaceGroup;
@@ -39,12 +42,15 @@ public class NewController implements Initializable {
         });
 
         convertButton.setOnAction(event -> {
-            if(getImportImagePath() != null) {
-                try {
-                    displayedImage.setConvertedImage(getConvertedImage());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if(this.importImagePath == null) {
+                showWarning("You need to import an image first!");
+                return;
+            }
+
+            try {
+                displayedImage.setConvertedImage(getConvertedImage());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }
@@ -58,7 +64,7 @@ public class NewController implements Initializable {
             chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
         }
 
-        PixelArt pixelart = new PixelArt(getImportImagePath(), ColorSpace.valueOf(colorSpace), chromaOffsetValue);
+        PixelArt pixelart = new PixelArt(this.importImagePath, ColorSpace.valueOf(colorSpace), chromaOffsetValue);
         DrednotColor[][] colors = pixelart.getDrednotColors();
         BufferedImage drednotImage = new BufferedImage(colors.length, colors[0].length, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < colors.length; x++) {
@@ -141,43 +147,61 @@ public class NewController implements Initializable {
         return false;
     }
 
-    public String getImportImagePath() {
-        if(importImagePath == null) {
-            Alert a = new Alert(Alert.AlertType.WARNING);
-            a.setHeaderText("You need to select an image first.");
-            a.show();
-            return null;
-        }else{
-            return this.importImagePath;
+    // this is being called from the UI Import menu
+    public void importImage() {
+        this.importImagePath = promptImportImagePath();
+        if(this.importImagePath != null) {
+            // setup the preview
+            System.out.println("Imported image:"+importImagePath);
+            imagePreview.setImage(new Image("file:///"+importImagePath));
+            displayedImage = new DisplayedImage(imagePreview);
+            displayedImage.setup();
         }
     }
 
-    public void selectImportImage() {
-        FileDialog chooser = new FileDialog((Frame)null, "Import an image");
-        chooser.setMode(FileDialog.LOAD);
-        chooser.setVisible(true);
-        String file = chooser.getDirectory()+chooser.getFile();
-        String extension = file.substring(file.length()-3, file.length());
-        if(!file.equals("nullnull")) {
-            if(isPermittedExtension(extension)) {
-                this.importImagePath = file;
-                System.out.println(file + " chosen.");
-                imagePreview.setImage(new Image("file:///"+importImagePath));
-                displayedImage = new DisplayedImage(imagePreview);
-                displayedImage.setup();
-            }else{
-                Alert a = new Alert(Alert.AlertType.ERROR);
-                a.setContentText("Selected file:\n"+file);
-                a.setHeaderText("You can only choose PNG and JPEG images.");
-                a.show();
-            }
+
+    private String promptImportImagePath() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select to import an image");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png")
+        );
+        File file = chooser.showOpenDialog(new Stage());
+        // file is null when user cancels the selection
+        return file == null ? null : file.toPath().toString();
+    }
+
+
+    // this is being called from the UI Export menu
+    public void exportImage() throws IOException {
+        // export only if there is imported image
+        if(this.importImagePath == null) {
+            showWarning("You need to import an image first!");
+            return;
+        }
+
+        String exportPath = promptExportImagePath();
+        if(exportPath != null) {
+            File outputfile = new File(exportPath);
+            ImageIO.write(getConvertedImage(), "png", outputfile);
         }
     }
 
-    boolean isPermittedExtension(String extension) {
-        for(String ext : permittedExtensions)
-            if(ext.equalsIgnoreCase(extension))
-                return true;
-            return false;
+    private String promptExportImagePath() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save exported image to");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png")
+        );
+        File file = chooser.showSaveDialog(new Stage());
+        // file is null when user cancels the selection
+        return file == null ? null : file.toPath().toString();
+    }
+
+    private void showWarning(String text) {
+        Alert a = new Alert(Alert.AlertType.NONE);
+        a.setHeaderText(text);
+        a.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        a.show();
     }
 }

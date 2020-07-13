@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -50,24 +51,49 @@ public class Controller implements Initializable {
     }
 
     public void selectImportImage() {
-        FileDialog chooser = new FileDialog((Frame)null, "Select to import an image");
-        chooser.setMode(FileDialog.LOAD);
-        chooser.setVisible(true);
-        String file = chooser.getDirectory()+chooser.getFile();
-        String extension = file.substring(file.length()-3, file.length());
-        if(!file.equals("nullnull")) {
-            if(!extension.equalsIgnoreCase("png")) {
-                Alert a = new Alert(Alert.AlertType.ERROR);
-                a.setContentText("Selected file:\n"+file);
-                a.setHeaderText("You can only choose PNG images!");
-                a.show();
-            }else{
-                this.importImage = file;
-                selectedImage.setText("Selected Image: "+file);
-            }
-            System.out.println(file + " chosen.");
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Select to import an image");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png")
+        );
+        File file = chooser.showOpenDialog(new Stage());
+        if(file != null && file.exists()) {
+            System.out.println(file.toPath() + " chosen.");
+            this.importImage = file.toPath().toString();
+            selectedImage.setText("Selected Image: "+file.toPath());
         }
     }
+
+    public String selectExportImage() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save exported image to");
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png")
+        );
+        File file = chooser.showSaveDialog(new Stage());
+        return file.toPath().toString();
+    }
+
+//    public void selectImportImage() {
+//        FileDialog chooser = new FileDialog(, "Select to import an image");
+//        chooser.setMode(FileDialog.LOAD);
+//        chooser.setVisible(true);
+//        String file = chooser.getDirectory()+chooser.getFile();
+//        String extension = file.substring(file.length()-3, file.length());
+//
+//        if(!file.equals("nullnull")) {
+//            if(!extension.equalsIgnoreCase("png")) {
+//                Alert a = new Alert(Alert.AlertType.ERROR);
+//                a.setContentText("Selected file:\n"+file);
+//                a.setHeaderText("You can only choose PNG images!");
+//                a.show();
+//            }else{
+//                this.importImage = file;
+//                selectedImage.setText("Selected Image: "+file);
+//            }
+//            System.out.println(file + " chosen.");
+//        }
+//    }
 
     public void showOriginal() throws IOException {
         if(getImportImagePath() != null) {
@@ -189,17 +215,17 @@ public class Controller implements Initializable {
         return displayImage;
     }
 
-    public String selectExportImage() {
-        FileDialog chooser = new FileDialog((Frame)null, "Select to export an image");
-        chooser.setMode(FileDialog.LOAD);
-        chooser.setVisible(true);
-        String file = chooser.getDirectory()+chooser.getFile();
-        if(file.equals("nullnull")) {
-            return null;
-        }
-        System.out.println(file + " chosen.");
-        return file;
-    }
+//    public String selectExportImage() {
+//        FileDialog chooser = new FileDialog((Frame)null, "Select to export an image");
+//        chooser.setMode(FileDialog.LOAD);
+//        chooser.setVisible(true);
+//        String file = chooser.getDirectory()+chooser.getFile();
+//        if(file.equals("nullnull")) {
+//            return null;
+//        }
+//        System.out.println(file + " chosen.");
+//        return file;
+//    }
 
     public String getImportImagePath() {
         if(importImage == null) {

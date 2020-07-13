@@ -10,7 +10,7 @@
     </properties>
     
     <groupId>groupId</groupId>
-    <artifactId>drednot-pixelart-converter</artifactId>
+    <artifactId>pixelart-converter</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 

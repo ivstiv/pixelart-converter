@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
@@ -17,15 +18,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.231" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#selectImportImage" text="Import Image" />
-            <MenuItem mnemonicParsing="false" text="Export Image" />
+            <MenuItem mnemonicParsing="false" onAction="#importImage" text="Import Image" />
+            <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Export Image" />
                   <MenuItem mnemonicParsing="false" text="Import color palette" />
+                  <MenuItem mnemonicParsing="false" text="Export converted image in csv" />
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
@@ -40,8 +42,8 @@
                            </toggleGroup></RadioMenuItem>
                         <RadioMenuItem mnemonicParsing="false" text="HSV" toggleGroup="$colorSpaceGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="CIEDE2000" toggleGroup="$colorSpaceGroup" />
-                        <RadioMenuItem mnemonicParsing="false" selected="true" text="CIELAB_76" toggleGroup="$colorSpaceGroup" />
-                        <RadioMenuItem mnemonicParsing="false" text="CIELAB_94" toggleGroup="$colorSpaceGroup" />
+                        <RadioMenuItem mnemonicParsing="false" text="CIELAB_76" toggleGroup="$colorSpaceGroup" />
+                        <RadioMenuItem mnemonicParsing="false" selected="true" text="CIELAB_94" toggleGroup="$colorSpaceGroup" />
                      </items>
                   </Menu>
           </items>
@@ -138,7 +140,7 @@
                   <Insets left="10.0" top="13.0" />
                </HBox.margin>
             </CheckBox>
-            <Button mnemonicParsing="false" text="Update preview">
+            <Button mnemonicParsing="false" text="Show Original">
                <HBox.margin>
                   <Insets left="10.0" top="8.0" />
                </HBox.margin>
@@ -162,9 +164,13 @@
             </Button>
          </children>
       </HBox>
-      <BorderPane fx:id="borderPane" prefHeight="653.0" prefWidth="1280.0">
+      <BorderPane fx:id="borderPane" prefHeight="653.0" prefWidth="1280.0" VBox.vgrow="ALWAYS">
          <center>
-            <ImageView fx:id="imagePreview" fitHeight="520.0" fitWidth="1167.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" BorderPane.alignment="CENTER">
+               <content>
+                  <ImageView fx:id="imagePreview" fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true" />
+               </content>
+            </ScrollPane>
          </center>
       </BorderPane>
   </children>

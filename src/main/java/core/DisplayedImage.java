@@ -59,6 +59,7 @@ public class DisplayedImage {
         });
 
         imagePreview.setOnScroll(e -> {
+            e.consume();
             double delta = e.getDeltaY()*-1;
             Rectangle2D viewport = imagePreview.getViewport();
 

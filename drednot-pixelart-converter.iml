@@ -9,17 +9,17 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="jdk" jdkName="13" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.dajudge.color-diff:color-diff:0.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:13.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:13.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:linux:13.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:13.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:13.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:linux:13.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:13.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:13.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:linux:13.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:13.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:win:13.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:linux:13.0.1" level="project" />
   </component>
 </module>
