@@ -1,10 +1,12 @@
 package core;
 
 import com.dajudge.colordiff.RgbColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,10 +26,11 @@ public class NewController implements Initializable {
 
     private String importImagePath = null;
     @FXML ImageView imagePreview;
-    @FXML Button zoomInButton, zoomOutButton, convertButton;
+    @FXML Button zoomInButton, zoomOutButton, convertButton, showOriginalButton;
     @FXML ToggleGroup colorSpaceGroup;
     @FXML CheckBox showColorID;
     @FXML TextField scaleRatio, fontSize, chromaOffset;
+    @FXML Label statusLabel;
     private DisplayedImage displayedImage;
 
     @Override
@@ -47,11 +50,30 @@ public class NewController implements Initializable {
                 return;
             }
 
-            try {
-                displayedImage.setConvertedImage(getConvertedImage());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            setStatus("Status: Converting. . . (The program might seem unresponsive.)");
+            convertButton.setDisable(true);
+            showOriginalButton.setDisable(true);
+
+            Thread convertingThread = new Thread(() -> {
+                long startTime = System.currentTimeMillis();
+                try {
+                    BufferedImage convertedImage = getConvertedImage();
+                    if(convertedImage != null)
+                        displayedImage.setConvertedImage(getConvertedImage());
+                } catch (OutOfMemoryError | IOException e) {
+                    e.printStackTrace();
+                    setStatus("Error: Couldn't convert the image. May be it is too big?");
+                    convertButton.setDisable(false);
+                    showOriginalButton.setDisable(false);
+                    return;
+                }
+                long endTime = System.currentTimeMillis();
+                long elapsedSeconds = (endTime-startTime)/1000;
+                setStatus("Status: Converted in "+elapsedSeconds+"s.");
+                convertButton.setDisable(false);
+                showOriginalButton.setDisable(false);
+            });
+            convertingThread.start();
         });
     }
 
@@ -151,8 +173,9 @@ public class NewController implements Initializable {
     public void importImage() {
         this.importImagePath = promptImportImagePath();
         if(this.importImagePath != null) {
-            // setup the preview
             System.out.println("Imported image:"+importImagePath);
+            setStatus("Status: Ready to convert.");
+            // setup the preview
             imagePreview.setImage(new Image("file:///"+importImagePath));
             displayedImage = new DisplayedImage(imagePreview);
             displayedImage.setup();
@@ -203,5 +226,9 @@ public class NewController implements Initializable {
         a.setHeaderText(text);
         a.getDialogPane().getButtonTypes().add(ButtonType.OK);
         a.show();
+    }
+
+    public void setStatus(String text) {
+        Platform.runLater(() -> statusLabel.setText(text));
     }
 }

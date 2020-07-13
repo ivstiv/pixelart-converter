@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_base_win_13_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_base_linux_13_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_controls_win_13_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_controls_linux_13_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_fxml_win_13_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_fxml_linux_13_0_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_graphics_win_13_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_openjfx_javafx_graphics_linux_13_0_1.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/drednot-pixelart-converter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/drednot-pixelart-converter.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/core/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/core/DisplayedImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/DisplayedImage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/core/NewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/NewController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/new-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/new-view.fxml" afterDir="false" />
     </list>
@@ -227,22 +218,22 @@
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1866" height="202" key="GridCell.Tab.0.bottom" timestamp="1594644822378">
+    <state width="1866" height="202" key="GridCell.Tab.0.bottom" timestamp="1594648210038">
       <screen x="0" y="0" width="1920" height="1036" />
     </state>
-    <state width="1866" height="202" key="GridCell.Tab.0.bottom/0.0.1920.1036@0.0.1920.1036" timestamp="1594644822378" />
-    <state width="1866" height="202" key="GridCell.Tab.0.center" timestamp="1594644822377">
+    <state width="1866" height="202" key="GridCell.Tab.0.bottom/0.0.1920.1036@0.0.1920.1036" timestamp="1594648210038" />
+    <state width="1866" height="202" key="GridCell.Tab.0.center" timestamp="1594648210037">
       <screen x="0" y="0" width="1920" height="1036" />
     </state>
-    <state width="1866" height="202" key="GridCell.Tab.0.center/0.0.1920.1036@0.0.1920.1036" timestamp="1594644822377" />
-    <state width="1866" height="202" key="GridCell.Tab.0.left" timestamp="1594644822377">
+    <state width="1866" height="202" key="GridCell.Tab.0.center/0.0.1920.1036@0.0.1920.1036" timestamp="1594648210037" />
+    <state width="1866" height="202" key="GridCell.Tab.0.left" timestamp="1594648210037">
       <screen x="0" y="0" width="1920" height="1036" />
     </state>
-    <state width="1866" height="202" key="GridCell.Tab.0.left/0.0.1920.1036@0.0.1920.1036" timestamp="1594644822377" />
-    <state width="1866" height="202" key="GridCell.Tab.0.right" timestamp="1594644822378">
+    <state width="1866" height="202" key="GridCell.Tab.0.left/0.0.1920.1036@0.0.1920.1036" timestamp="1594648210037" />
+    <state width="1866" height="202" key="GridCell.Tab.0.right" timestamp="1594648210037">
       <screen x="0" y="0" width="1920" height="1036" />
     </state>
-    <state width="1866" height="202" key="GridCell.Tab.0.right/0.0.1920.1036@0.0.1920.1036" timestamp="1594644822378" />
+    <state width="1866" height="202" key="GridCell.Tab.0.right/0.0.1920.1036@0.0.1920.1036" timestamp="1594648210037" />
     <state x="255" y="254" width="1339" height="743" key="SettingsEditor" timestamp="1594495426674">
       <screen x="0" y="0" width="1920" height="1036" />
     </state>
