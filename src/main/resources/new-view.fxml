@@ -56,7 +56,7 @@
                         <RadioMenuItem mnemonicParsing="false" text="Faber Castell 36" toggleGroup="$colorPaletteGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="Black and White" toggleGroup="$colorPaletteGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="RGB" toggleGroup="$colorPaletteGroup" />
-                        <RadioMenuItem mnemonicParsing="false" text="Imported" toggleGroup="$colorPaletteGroup">
+                        <RadioMenuItem fx:id="importedOption" disable="true" mnemonicParsing="false" text="Imported" toggleGroup="$colorPaletteGroup">
                            <toggleGroup>
                               <ToggleGroup fx:id="colorPaletteGroup1" />
                            </toggleGroup>
@@ -65,10 +65,10 @@
                   </Menu>
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About Pixel Art Converter" />
-          </items>
+        <Menu mnemonicParsing="false" text="About">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About" />
+               </items>
         </Menu>
       </menus>
     </MenuBar>

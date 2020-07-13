@@ -11,9 +11,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -35,6 +39,7 @@ public class NewController implements Initializable {
     @FXML Button zoomInButton, zoomOutButton, convertButton, showOriginalButton;
     // you will not find these groups in SceneBuilder.. check the fxml file :D
     @FXML ToggleGroup colorSpaceGroup, colorPaletteGroup;
+    @FXML RadioMenuItem importedOption;
     @FXML CheckBox showColorID;
     @FXML TextField scaleRatio, fontSize, chromaOffset;
     @FXML Label statusLabel;
@@ -74,7 +79,7 @@ public class NewController implements Initializable {
                     // so this null check is required
                     if(convertedImage != null)
                         displayedImage.setConvertedImage(convertedImage);
-                } catch (OutOfMemoryError | IOException e) {
+                } catch (OutOfMemoryError e) {
                     e.printStackTrace();
                     setStatus("Error: Couldn't convert the image. May be it is too big?");
                     convertButton.setDisable(false);
@@ -91,7 +96,7 @@ public class NewController implements Initializable {
         });
     }
 
-    private BufferedImage getConvertedImage() throws IOException {
+    private BufferedImage getConvertedImage() {
         RadioMenuItem selectedRadioButton = (RadioMenuItem) colorSpaceGroup.getSelectedToggle();
         String colorSpace = selectedRadioButton.getText();
 
@@ -101,11 +106,16 @@ public class NewController implements Initializable {
         }
 
         String colorPalettePath = getColorPalettePath();
-        PixelArt pixelart;
-        if(colorPalettePath.equalsIgnoreCase("Imported")) {
-            pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
-        }else{
-            pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
+        PixelArt pixelart = null;
+        try {
+            if(colorPalettePath.equalsIgnoreCase("Imported")) {
+                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
+            }else{
+                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorDialog(e);
         }
 
         DrednotColor[][] colors = pixelart.getDrednotColors();
@@ -170,18 +180,30 @@ public class NewController implements Initializable {
         }
     }
 
-    public void importPalette() throws FileNotFoundException {
+    public void importPalette() {
         String path = promptImportPalettePath();
 
         if(path != null) {
             File tempFile = new File(path);
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(tempFile));
+            BufferedReader bufferedReader = null;
+            try {
+                bufferedReader = new BufferedReader(new FileReader(tempFile));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
             String jsonData = bufferedReader.lines().collect(Collectors.joining());
 
             // deserialize the data
             JsonParser parser = new JsonParser();
-            JsonElement tradeElement = parser.parse(jsonData);
-            JsonArray colorsJson = tradeElement.getAsJsonArray();
+            JsonArray colorsJson = null;
+            try {
+                JsonElement tradeElement = parser.parse(jsonData);
+                colorsJson = tradeElement.getAsJsonArray();
+            }catch (Exception e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
 
             Gson gson = new Gson();
             for(JsonElement el : colorsJson) {
@@ -192,6 +214,7 @@ public class NewController implements Initializable {
                 customPalette.add(new DrednotColor(r, g, b, id));
             }
             showWarning("Custom palette has been imported!\nChange the palette from the Modify menu to \"Imported\" in order for it to be applied.");
+            importedOption.setDisable(false);
         }
     }
 
@@ -206,7 +229,7 @@ public class NewController implements Initializable {
         return file == null ? null : file.toPath().toString();
     }
 
-    public void resize() throws IOException {
+    public void resize() {
         // resize only if there is imported image
         if(this.importImagePath == null) {
             showWarning("You need to import an image first!");
@@ -244,8 +267,14 @@ public class NewController implements Initializable {
         return "";
     }
 
-    private BufferedImage getResizedImage(String imagePath, int scaledWidth, int scaledHeight) throws IOException {
-        BufferedImage inputImage = ImageIO.read(new File(imagePath));
+    private BufferedImage getResizedImage(String imagePath, int scaledWidth, int scaledHeight) {
+        BufferedImage inputImage = null;
+        try {
+            inputImage = ImageIO.read(new File(imagePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorDialog(e);
+        }
 
         // creates output image
         BufferedImage outputImage = new BufferedImage(scaledWidth, scaledHeight, inputImage.getType());
@@ -264,7 +293,7 @@ public class NewController implements Initializable {
     }
 
     // this is being called from the UI Import menu
-    public void importImage() throws IOException {
+    public void importImage() {
         this.importImagePath = promptImportImagePath();
         if(this.importImagePath != null) {
             System.out.println("Imported image:"+importImagePath);
@@ -273,7 +302,12 @@ public class NewController implements Initializable {
             //imagePreview.setImage(new Image("file:///"+importImagePath));
             displayedImage = new DisplayedImage(imagePreview);
             //displayedImage.setOriginalImage(new Image("file:///"+importImagePath));
-            displayedImage.setOriginalImage(ImageIO.read(new File(importImagePath)));
+            try {
+                displayedImage.setOriginalImage(ImageIO.read(new File(importImagePath)));
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
             displayedImage.setup();
         }
     }
@@ -292,7 +326,7 @@ public class NewController implements Initializable {
 
 
     // this is being called from the UI Export menu
-    public void exportImage() throws IOException {
+    public void exportImage() {
         // export only if there is imported image
         if(this.importImagePath == null) {
             showWarning("You need to import an image first!");
@@ -302,7 +336,12 @@ public class NewController implements Initializable {
         String exportPath = promptExportImagePath();
         if(exportPath != null) {
             File outputfile = new File(exportPath);
-            ImageIO.write(getConvertedImage(), "png", outputfile);
+            try {
+                ImageIO.write(getConvertedImage(), "png", outputfile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
         }
     }
 
@@ -318,7 +357,7 @@ public class NewController implements Initializable {
     }
 
     // this is being called from the UI Export menu
-    public void exportCSV() throws IOException {
+    public void exportCSV() {
         // export only if there is imported image
         if(this.importImagePath == null) {
             showWarning("You need to import an image first!");
@@ -337,16 +376,27 @@ public class NewController implements Initializable {
             }
 
             String colorPalettePath = getColorPalettePath();
-            PixelArt pixelart;
-            if(colorPalettePath.equalsIgnoreCase("Imported")) {
-                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
-            }else{
-                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
-            }
 
+            PixelArt pixelart = null;
+            try {
+                if(colorPalettePath.equalsIgnoreCase("Imported")) {
+                    pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
+                }else{
+                    pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
             DrednotColor[][] colors = pixelart.getDrednotColors();
 
-            FileWriter myWriter = new FileWriter(exportPath);
+            FileWriter myWriter = null;
+            try {
+                myWriter = new FileWriter(exportPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
             StringBuilder line = new StringBuilder();
 
             DrednotColor[][] transposed = new DrednotColor[colors[0].length][colors.length];
@@ -363,10 +413,20 @@ public class NewController implements Initializable {
                 }
 
                 String finishedLine = line.toString().replaceAll(",$", "\n");
-                myWriter.write(finishedLine);
+                try {
+                    myWriter.write(finishedLine);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showErrorDialog(e);
+                }
                 line.setLength(0);
             }
-            myWriter.close();
+            try {
+                myWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorDialog(e);
+            }
             System.out.println("Successfully exported as CSV file!");
             setStatus("Status: Successfully exported as CSV file!");
         }
@@ -380,6 +440,15 @@ public class NewController implements Initializable {
         return file == null ? null : file.toPath().toString();
     }
 
+    public void showAbout() {
+        Alert a = new Alert(Alert.AlertType.NONE);
+        a.setTitle("About");
+        a.setHeaderText("If you have any issues with the program do not hesitate to contact me!\nDiscord tag: SKDown#4341");
+        a.setContentText("Github: github.com/ivstiv/pixelart-converter");
+        a.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        a.show();
+    }
+
     /* Utility methods */
 
     private void showWarning(String text) {
@@ -387,6 +456,41 @@ public class NewController implements Initializable {
         a.setHeaderText(text);
         a.getDialogPane().getButtonTypes().add(ButtonType.OK);
         a.show();
+    }
+
+    public void showErrorDialog(Exception ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Exception Dialog");
+        alert.setHeaderText("Opps, something really bad happened!");
+        alert.setContentText("Please make my day a bit worse by sending me the stacktrace from below. :D\n" +
+                "Contact details in the About page!");
+
+        Label label = new Label("The exception stacktrace was:");
+
+        // Create expandable Exception.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        // Set expandable Exception into the dialog pane.
+        alert.getDialogPane().setExpandableContent(expContent);
+
+        alert.showAndWait();
     }
 
     public void setStatus(String text) {
