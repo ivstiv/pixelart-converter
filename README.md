@@ -1,19 +1,19 @@
 # Information
 
-This project aims to recreate pixel arts as close as possible to a given image but with a limited color palette. In this case it is working with the color palette of the [Drednot's](https://drednot.io) Colored Panel but technically it should not have any issues to work with any other palette given it is in the right json format.
+This project aims to recreate pixel arts as close as possible to a given image but with a limited color palette. By default it is working with the color palette of the [Drednot's](https://drednot.io) Colored Panel but technically it should not have any issues to work with any other palette given it is in the right json format.
 
 Features:
+- Resizing of images
 - Scaling of the pixel art
-- Option to show the IDs of the colors (specific to Drednot)
-- Preview images in different color spaces
-- Export images in different color spaces
+- Option to show the IDs of the colors
+- Preview & export images in different color spaces using different color palettes
 - Available color spaces and algorithms: RGB, HSV, CIEDE2000, CIELAB76, CIELAB94 
+- You can import your own palette as long as it follows the expected json format. (Check the default ones in src/main/resources/palettes)
+- Export the color numbers in CSV format which can then be converted into A4 pdf pages using [this script](https://gist.github.com/Ivstiv/a4b8a82e48617d82db9042a9fd740f98)
 
-**Note that this has been made over a weekend without any testing or best practices and can have a lot of bugs. Please report them to me on discord SKDown#4341!**
-# Screenshots
-**UI of the program:**
 
-![UI](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/doc1.png)
+# Screenshots and videos
+[![Pixelart Converter Showcase](https://github.com/Ivstiv/drednot-pixelart-converter/blob/master/images/thumbnail.jpg)](https://vimeo.com/438229514 "Pixelart Converter Showcase")
 
 **Experiment showing all algorithms:**
 
@@ -42,10 +42,10 @@ Compilation:
 ```mvn package```
 
 Run the compiled jar:
-```java -jar target/drednot-pixelart-converter-1.0.jar```
+```java -jar target/pixelart-converter-2.0.jar```
 
 Or what I do is just run both of them in bash:
-```mvn package && java -jar target/drednot-pixelart-converter-1.0.jar```
+```mvn package && java -jar target/pixelart-converter-2.0.jar```
 
 # Planned features
 If there is interest I can continue working on the project and add more features to it such as:
