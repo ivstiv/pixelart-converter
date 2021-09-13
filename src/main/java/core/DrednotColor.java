@@ -6,18 +6,19 @@ import java.awt.*;
 
 public class DrednotColor extends RgbColor{
 
-    private int id, rgbValue;
+    private int rgbValue;
+    private String id;
     private int[] lab;
     private float[] hsv;
 
-    public DrednotColor(int r, int g, int b, int id) {
+    public DrednotColor(int r, int g, int b, String id) {
         super(r,g,b);
         this.id = id;
         rgbValue = (r << 16) | (g << 8) | b;
     }
 
     // to make it compatible with BufferedImage and the library for color distance
-    public DrednotColor(int rgbValue, int id) {
+    public DrednotColor(int rgbValue, String id) {
         super(
                 rgbValue & 0xff,
                 (rgbValue & 0xff00) >> 8,
@@ -27,7 +28,7 @@ public class DrednotColor extends RgbColor{
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

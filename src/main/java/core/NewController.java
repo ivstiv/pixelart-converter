@@ -165,7 +165,9 @@ public class NewController implements Initializable {
         String colorPalette = selectedRadioButton.getText();
 
         switch(colorPalette) {
-            case "Drednot":
+            case "Dredark":
+            return "palettes/DrednotNew.json";
+            case "Drednot OLD":
                 return "palettes/Drednot.json";
             case "Faber Castell 36":
                 return "palettes/Faber_Castell_36.json";
@@ -176,7 +178,7 @@ public class NewController implements Initializable {
             case "Imported":
                 return "Imported";
             default:
-                return "palettes/Drednot.json";
+                return "palettes/DrednotNew.json";
         }
     }
 
@@ -207,7 +209,7 @@ public class NewController implements Initializable {
 
             Gson gson = new Gson();
             for(JsonElement el : colorsJson) {
-                int id = el.getAsJsonObject().get("ID").getAsInt();
+                String id = el.getAsJsonObject().get("ID").getAsString();
                 int r = el.getAsJsonObject().get("R").getAsInt();
                 int g = el.getAsJsonObject().get("G").getAsInt();
                 int b = el.getAsJsonObject().get("B").getAsInt();

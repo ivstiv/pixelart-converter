@@ -48,11 +48,12 @@
                   </Menu>
                   <Menu mnemonicParsing="false" text="Color palettes">
                      <items>
-                        <RadioMenuItem mnemonicParsing="false" selected="true" text="Drednot">
+                     <RadioMenuItem mnemonicParsing="false" selected="true" text="Dredark">
                            <toggleGroup>
                               <ToggleGroup fx:id="colorPaletteGroup" />
                            </toggleGroup>
                         </RadioMenuItem>
+                        <RadioMenuItem mnemonicParsing="false" text="Drednot OLD" toggleGroup="$colorPaletteGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="Faber Castell 36" toggleGroup="$colorPaletteGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="Black and White" toggleGroup="$colorPaletteGroup" />
                         <RadioMenuItem mnemonicParsing="false" text="RGB" toggleGroup="$colorPaletteGroup" />

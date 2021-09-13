@@ -59,7 +59,7 @@ public class PixelArt {
             Gson gson = new Gson();
             List<RgbColor> colors = new ArrayList<>();
             for(JsonElement el : colorsJson) {
-                int id = el.getAsJsonObject().get("ID").getAsInt();
+                String id = el.getAsJsonObject().get("ID").getAsString();
                 int r = el.getAsJsonObject().get("R").getAsInt();
                 int g = el.getAsJsonObject().get("G").getAsInt();
                 int b = el.getAsJsonObject().get("B").getAsInt();
@@ -100,7 +100,7 @@ public class PixelArt {
                         originalColors[j][i].getRed(),
                         originalColors[j][i].getGreen(),
                         originalColors[j][i].getBlue(),
-                        -1
+                        "-1"
                 );
 
                 drednotColors[j][i] = calculator.getClosestColor(color, drednotColorPalette);
