@@ -4,13 +4,19 @@ import com.dajudge.colordiff.RgbColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -19,6 +25,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -71,6 +78,9 @@ public class NewController implements Initializable {
                     convertButton.setDisable(false);
                     showOriginalButton.setDisable(false);
                     return;
+                }  catch (IllegalStateException e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
                 }
                 long endTime = System.currentTimeMillis();
                 long elapsedSeconds = (endTime-startTime)/1000;
@@ -348,6 +358,9 @@ public class NewController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
                 showErrorDialog(e);
+            }  catch (IllegalStateException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
             }
         }
     }
@@ -389,6 +402,9 @@ public class NewController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
                 showErrorDialog(e);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
             }
             DrednotColor[][] colors = pixelart.getDrednotColors();
 
@@ -446,8 +462,17 @@ public class NewController implements Initializable {
         Alert a = new Alert(Alert.AlertType.NONE);
         a.setTitle("About");
         a.setHeaderText("If you have any issues with the program do not hesitate to contact me!\nDiscord tag: SKDown#4341");
-        a.setContentText("Github: github.com/ivstiv/pixelart-converter");
-        a.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        a.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Hyperlink link = new Hyperlink();
+        link.setText("github.com/ivstiv/pixelart-converter");
+        link.setOnAction(e -> {
+            ClipboardContent content = new ClipboardContent();
+            content.putString(link.getText());
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            clipboard.setContent(content);
+            a.setContentText("Link copied to clipboard!");
+        });
+        a.setGraphic(link);
         a.show();
     }
 

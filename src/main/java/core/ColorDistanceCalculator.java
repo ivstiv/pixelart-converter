@@ -19,7 +19,6 @@ public class ColorDistanceCalculator {
     }
 
     public DrednotColor getClosestColor(DrednotColor color, ColorPalette palette) {
-        System.out.println(color.r+"|"+color.g+"|"+color.b+"|"+color.getAlpha());
         if (color.getAlpha() == 0 && color.r == 0 && color.g == 0 && color.b == 0) {
             return palette.getDefaultColor();
         }

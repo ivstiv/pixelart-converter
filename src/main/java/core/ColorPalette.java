@@ -3,6 +3,7 @@ package core;
 import com.dajudge.colordiff.RgbColor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
@@ -18,11 +19,20 @@ public class ColorPalette {
         this.defaultColor = defaultColor;
     }
 
-    public static ColorPalette fromJson(String jsonData) {
+    public static ColorPalette fromJson(String jsonData) throws IllegalStateException {
         JsonParser parser = new JsonParser();
         JsonElement tradeElement = parser.parse(jsonData);
-        JsonArray colorsJson = tradeElement.getAsJsonArray();
+        JsonObject config = tradeElement.getAsJsonObject();
 
+        JsonObject defaultColorJson = config.getAsJsonObject("defaultColor");
+        DrednotColor defaultColor = new DrednotColor(
+                defaultColorJson.get("R").getAsInt(),
+                defaultColorJson.get("G").getAsInt(),
+                defaultColorJson.get("B").getAsInt(),
+                defaultColorJson.get("ID").getAsString()
+        );
+
+        JsonArray colorsJson = config.getAsJsonArray("palette");
         List<RgbColor> colors = new ArrayList<>();
         for(JsonElement el : colorsJson) {
             String id = el.getAsJsonObject().get("ID").getAsString();
@@ -31,7 +41,7 @@ public class ColorPalette {
             int b = el.getAsJsonObject().get("B").getAsInt();
             colors.add(new DrednotColor(r,g,b,id));
         }
-        return new ColorPalette(colors, new DrednotColor(187,187,187, "FA")); // TO-DO: fix this dummy value
+        return new ColorPalette(colors, defaultColor);
     }
 
     public List<RgbColor> getPalette() {

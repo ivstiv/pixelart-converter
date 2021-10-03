@@ -29,7 +29,6 @@ public class PixelArt {
                 int red = pixel.getRed();
                 int blue = pixel.getBlue();
                 int green = pixel.getGreen();
-                System.out.println("alpha" + pixel.getAlpha());
 
                 rgbColors[i][j] = new Color(red, green, blue, pixel.getAlpha());
             }
