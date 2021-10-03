@@ -1,22 +1,22 @@
 package core;
 
 import com.dajudge.colordiff.RgbColor;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,9 +25,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -44,22 +43,16 @@ public class NewController implements Initializable {
     @FXML TextField scaleRatio, fontSize, chromaOffset;
     @FXML Label statusLabel;
     private DisplayedImage displayedImage;
-    private List<RgbColor> customPalette = new ArrayList<>();
+    private String importedPalettePath;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        zoomInButton.setOnAction(event -> {
-            displayedImage.zoomIn();
-        });
+        zoomInButton.setOnAction(event -> displayedImage.zoomIn());
 
-        zoomOutButton.setOnAction(event -> {
-            displayedImage.zoomOut();
-        });
+        zoomOutButton.setOnAction(event -> displayedImage.zoomOut());
 
-        showOriginalButton.setOnAction(event -> {
-            this.displayedImage.showOriginalImage();
-        });
+        showOriginalButton.setOnAction(event -> this.displayedImage.showOriginalImage());
 
         convertButton.setOnAction(event -> {
             if(this.importImagePath == null) {
@@ -85,6 +78,9 @@ public class NewController implements Initializable {
                     convertButton.setDisable(false);
                     showOriginalButton.setDisable(false);
                     return;
+                }  catch (IllegalStateException e) {
+                    e.printStackTrace();
+                    Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
                 }
                 long endTime = System.currentTimeMillis();
                 long elapsedSeconds = (endTime-startTime)/1000;
@@ -96,6 +92,76 @@ public class NewController implements Initializable {
         });
     }
 
+    private String getPaletteInJson () {
+        String path = getPalettePath();
+        if (path.startsWith("palettes")) {
+            return readFromBundledFiles(path);
+        } else {
+            return readFromFileSystem(path);
+        }
+    }
+
+
+    private String getPalettePath () {
+        RadioMenuItem selectedRadioButton = (RadioMenuItem) colorPaletteGroup.getSelectedToggle();
+        String label = selectedRadioButton.getText();
+
+        switch(label) {
+            case "Dredark":
+                return "palettes/DrednotNew.json";
+            case "Drednot OLD":
+                return "palettes/Drednot.json";
+            case "Faber Castell 36":
+                return "palettes/Faber_Castell_36.json";
+            case "Black and White":
+                return "palettes/BlackWhite.json";
+            case "RGB":
+                return "palettes/RGB.json";
+            case "Imported":
+                if (importedPalettePath == null) {
+                    showWarning("You haven't imported a palette. The default one will be used.");
+                    return "palettes/DrednotNew.json";
+                }
+                return importedPalettePath;
+            default:
+                return "palettes/DrednotNew.json";
+        }
+    }
+
+
+    private String readFromBundledFiles (String path) {
+        try {
+            // I am reading in the file as stream and writing it to a file because of this:
+            // https://stackoverflow.com/questions/43811764/java-getclass-getclassloader-getresourcepath-fails-inside-maven-shaded-ja
+            InputStream is = getClass().getClassLoader().getResourceAsStream(path);
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);
+            File tempFile = File.createTempFile("aaa", "aaa", null);
+            OutputStream fos = new FileOutputStream(tempFile);
+            fos.write(buffer);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(tempFile));
+
+            return bufferedReader.lines().collect(Collectors.joining());
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorDialog(e);
+            return null;
+        }
+    }
+
+
+    private String readFromFileSystem (String path) {
+        try {
+            File tempFile = new File(path);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(tempFile));
+            return bufferedReader.lines().collect(Collectors.joining());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            showErrorDialog(e);
+        }
+        return null;
+    }
+
     private BufferedImage getConvertedImage() {
         RadioMenuItem selectedRadioButton = (RadioMenuItem) colorSpaceGroup.getSelectedToggle();
         String colorSpace = selectedRadioButton.getText();
@@ -105,14 +171,10 @@ public class NewController implements Initializable {
             chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
         }
 
-        String colorPalettePath = getColorPalettePath();
         PixelArt pixelart = null;
         try {
-            if(colorPalettePath.equalsIgnoreCase("Imported")) {
-                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
-            }else{
-                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
-            }
+            ColorPalette palette = ColorPalette.fromJson(getPaletteInJson());
+            pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, palette);
         } catch (IOException e) {
             e.printStackTrace();
             showErrorDialog(e);
@@ -140,7 +202,7 @@ public class NewController implements Initializable {
         g2.drawImage(drednotImage, 0, 0, displayImage.getWidth(), displayImage.getHeight(), null);
         g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSizeValue));
 
-        // i need a calculator here as well to put white text for black tiles
+        // I need a calculator here as well to put white text for black tiles
         if(showColorID.isSelected()) {
             ColorDistanceCalculator calculator = new ColorDistanceCalculator(ColorSpace.RGB);
             for (int x = 0; x < colors.length; x++) {
@@ -160,63 +222,18 @@ public class NewController implements Initializable {
         return displayImage;
     }
 
-    private String getColorPalettePath() {
-        RadioMenuItem selectedRadioButton = (RadioMenuItem) colorPaletteGroup.getSelectedToggle();
-        String colorPalette = selectedRadioButton.getText();
-
-        switch(colorPalette) {
-            case "Drednot":
-                return "palettes/Drednot.json";
-            case "Faber Castell 36":
-                return "palettes/Faber_Castell_36.json";
-            case "Black and White":
-                return "palettes/BlackWhite.json";
-            case "RGB":
-                return "palettes/RGB.json";
-            case "Imported":
-                return "Imported";
-            default:
-                return "palettes/Drednot.json";
-        }
-    }
 
     public void importPalette() {
         String path = promptImportPalettePath();
 
         if(path != null) {
-            File tempFile = new File(path);
-            BufferedReader bufferedReader = null;
-            try {
-                bufferedReader = new BufferedReader(new FileReader(tempFile));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                showErrorDialog(e);
-            }
-            String jsonData = bufferedReader.lines().collect(Collectors.joining());
-
-            // deserialize the data
-            JsonParser parser = new JsonParser();
-            JsonArray colorsJson = null;
-            try {
-                JsonElement tradeElement = parser.parse(jsonData);
-                colorsJson = tradeElement.getAsJsonArray();
-            }catch (Exception e) {
-                e.printStackTrace();
-                showErrorDialog(e);
-            }
-
-            Gson gson = new Gson();
-            for(JsonElement el : colorsJson) {
-                int id = el.getAsJsonObject().get("ID").getAsInt();
-                int r = el.getAsJsonObject().get("R").getAsInt();
-                int g = el.getAsJsonObject().get("G").getAsInt();
-                int b = el.getAsJsonObject().get("B").getAsInt();
-                customPalette.add(new DrednotColor(r, g, b, id));
-            }
-            showWarning("Custom palette has been imported!\nChange the palette from the Modify menu to \"Imported\" in order for it to be applied.");
+            importedPalettePath = path;
             importedOption.setDisable(false);
+            showWarning("Custom palette has been imported!\nChange the palette from the Modify menu to \"Imported\" in order for it to be applied.");
         }
     }
+
+
 
     private String promptImportPalettePath() {
         FileChooser chooser = new FileChooser();
@@ -244,7 +261,7 @@ public class NewController implements Initializable {
             return;
         }
 
-        String widthXheight[] = newSize.split("x");
+        String[] widthXheight = newSize.split("x");
         BufferedImage newImage = getResizedImage(
                 this.importImagePath,
                 Integer.parseInt(widthXheight[0]),
@@ -298,7 +315,7 @@ public class NewController implements Initializable {
         if(this.importImagePath != null) {
             System.out.println("Imported image:"+importImagePath);
             setStatus("Status: Ready to convert.");
-            // setup the preview
+            // set up the preview
             //imagePreview.setImage(new Image("file:///"+importImagePath));
             displayedImage = new DisplayedImage(imagePreview);
             //displayedImage.setOriginalImage(new Image("file:///"+importImagePath));
@@ -335,12 +352,15 @@ public class NewController implements Initializable {
 
         String exportPath = promptExportImagePath();
         if(exportPath != null) {
-            File outputfile = new File(exportPath);
+            File outputFile = new File(exportPath);
             try {
-                ImageIO.write(getConvertedImage(), "png", outputfile);
+                ImageIO.write(getConvertedImage(), "png", outputFile);
             } catch (IOException e) {
                 e.printStackTrace();
                 showErrorDialog(e);
+            }  catch (IllegalStateException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
             }
         }
     }
@@ -375,18 +395,16 @@ public class NewController implements Initializable {
                 chromaOffsetValue = Double.parseDouble(chromaOffset.getText());
             }
 
-            String colorPalettePath = getColorPalettePath();
-
             PixelArt pixelart = null;
             try {
-                if(colorPalettePath.equalsIgnoreCase("Imported")) {
-                    pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, customPalette);
-                }else{
-                    pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, getColorPalettePath());
-                }
+                ColorPalette palette = ColorPalette.fromJson(getPaletteInJson());
+                pixelart = new PixelArt(displayedImage.getOriginalImage(), ColorSpace.valueOf(colorSpace), chromaOffsetValue, palette);
             } catch (IOException e) {
                 e.printStackTrace();
                 showErrorDialog(e);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showWarning("The palette config has a syntax error!"));
             }
             DrednotColor[][] colors = pixelart.getDrednotColors();
 
@@ -444,8 +462,17 @@ public class NewController implements Initializable {
         Alert a = new Alert(Alert.AlertType.NONE);
         a.setTitle("About");
         a.setHeaderText("If you have any issues with the program do not hesitate to contact me!\nDiscord tag: SKDown#4341");
-        a.setContentText("Github: github.com/ivstiv/pixelart-converter");
-        a.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        a.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Hyperlink link = new Hyperlink();
+        link.setText("github.com/ivstiv/pixelart-converter");
+        link.setOnAction(e -> {
+            ClipboardContent content = new ClipboardContent();
+            content.putString(link.getText());
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            clipboard.setContent(content);
+            a.setContentText("Link copied to clipboard!");
+        });
+        a.setGraphic(link);
         a.show();
     }
 
@@ -461,7 +488,7 @@ public class NewController implements Initializable {
     public void showErrorDialog(Exception ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Exception Dialog");
-        alert.setHeaderText("Opps, something really bad happened!");
+        alert.setHeaderText("Oops, something really bad happened!");
         alert.setContentText("Please make my day a bit worse by sending me the stacktrace from below. :D\n" +
                 "Contact details in the About page!");
 

@@ -18,18 +18,21 @@ public class ColorDistanceCalculator {
         this.colorSpace = colorSpace;
     }
 
-    public DrednotColor getClosestColor(RgbColor color, List<RgbColor> palette) {
+    public DrednotColor getClosestColor(DrednotColor color, ColorPalette palette) {
+        if (color.getAlpha() == 0 && color.r == 0 && color.g == 0 && color.b == 0) {
+            return palette.getDefaultColor();
+        }
         switch (colorSpace) {
             case CIEDE2000:
-                return (DrednotColor) ColorDiff.closest(color, palette);
+                return (DrednotColor) ColorDiff.closest(color, palette.getPalette());
             case RGB:
-                return shortestDistanceRGB(color, palette);
+                return shortestDistanceRGB(color, palette.getPalette());
             case HSV:
-                return shortestDistanceHSV(color, palette);
+                return shortestDistanceHSV(color, palette.getPalette());
             case CIELAB_76:
-                return shortestDistanceCIE76(color, palette);
+                return shortestDistanceCIE76(color, palette.getPalette());
             case CIELAB_94:
-                return shortestDistanceCIE94(color, palette);
+                return shortestDistanceCIE94(color, palette.getPalette());
             default:
                 throw new RuntimeException("Invalid color space!");
         }
